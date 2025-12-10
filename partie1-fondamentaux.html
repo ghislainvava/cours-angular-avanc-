@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tests Unitaires Angular - Partie 1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f3f4f6;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .presentation {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .header {
+            background: #1e3a8a;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .slide-container {
+            flex: 1;
+            padding: 2rem;
+            overflow: hidden;
+        }
+        
+        .slide {
+            background: white;
+            height: 100%;
+            padding: 3rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        .navigation {
+            background: #e5e7eb;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:disabled {
+            background: #d1d5db;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        button:not(:disabled) {
+            background: #2563eb;
+            color: white;
+        }
+        
+        button:not(:disabled):hover {
+            background: #1d4ed8;
+        }
+        
+        .indicators {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #9ca3af;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .indicator.active {
+            background: #2563eb;
+            width: 32px;
+            border-radius: 6px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            color: #1e3a8a;
+            margin-bottom: 2rem;
+        }
+        
+        h2 {
+            font-size: 2.5rem;
+            color: #1e3a8a;
+            margin-bottom: 2rem;
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .box {
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 3px solid;
+        }
+        
+        .box-red {
+            background: #fef2f2;
+            border-color: #fca5a5;
+        }
+        
+        .box-green {
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+        
+        .box-blue {
+            background: #eff6ff;
+            border-color: #93c5fd;
+        }
+        
+        .box-yellow {
+            background: #fefce8;
+            border-color: #fde047;
+        }
+        
+        .alert {
+            padding: 1.5rem;
+            border-left: 8px solid;
+            margin-top: 2rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+        
+        .alert-blue {
+            background: #dbeafe;
+            border-color: #2563eb;
+        }
+        
+        .alert-yellow {
+            background: #fef9c3;
+            border-color: #eab308;
+        }
+        
+        ul {
+            list-style: none;
+            padding-left: 1.5rem;
+        }
+        
+        li {
+            margin: 0.75rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .scenario {
+            background: white;
+            border: 3px solid;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .pyramid {
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+        
+        .pyramid-level {
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        
+        .pyramid-e2e {
+            background: linear-gradient(to right, #ef4444, #dc2626);
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+        
+        .pyramid-integration {
+            background: linear-gradient(to right, #f97316, #ea580c);
+            margin: 0 3rem;
+        }
+        
+        .pyramid-unit {
+            background: linear-gradient(to right, #22c55e, #16a34a);
+            border-radius: 0 0 0.5rem 0.5rem;
+        }
+        
+        code {
+            background: #fbbf24;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+        }
+        
+        .logo-box {
+            background: #1e3a8a;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 3rem;
+        }
+        
+        .characteristic {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .icon {
+            font-size: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="header">
+            <div>
+                <strong>Tests Unitaires Angular - Partie 1 : Fondamentaux</strong>
+            </div>
+            <div id="slideCounter">Slide 1 / 8</div>
+        </div>
+        
+        <div class="slide-container">
+            <!-- Slide 1 -->
+            <div class="slide active">
+                <div class="title-slide">
+                    <h1>Tests Unitaires dans Angular</h1>
+                    <div style="font-size: 2rem; color: #6b7280; margin-bottom: 2rem;">
+                        Séquence 4 - Formation Angular
+                    </div>
+                    <div style="font-size: 1.5rem; color: #374151;">
+                        <p><strong>Date :</strong> 17/12/2025</p>
+                        <p><strong>Durée :</strong> 3h30</p>
+                    </div>
+                    <div class="logo-box">
+                        IPI - École d'Informatique
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 2 -->
+            <div class="slide">
+                <h2>Objectifs de la séance</h2>
+                <div style="background: #eff6ff; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem;">
+                    • Comprendre l'intérêt du test unitaire dans une application Angular
+                </div>
+                <div style="background: #eff6ff; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem;">
+                    • Écrire des tests unitaires simples pour un service (mock, valeur retournée)
+                </div>
+                <div style="background: #eff6ff; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem;">
+                    • Écrire des tests unitaires simples pour un composant (entrée, rendu)
+                </div>
+                <div style="background: #eff6ff; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem;">
+                    • Utiliser Jasmine (describe, it, expect, beforeEach) pour structurer les tests
+                </div>
+                <div style="background: #eff6ff; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem;">
+                    • Utiliser TestBed pour configurer un module de test indépendant
+                </div>
+                <div style="background: #eff6ff; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem;">
+                    • Comprendre comment Karma exécute les tests et interpréter les résultats
+                </div>
+                <div style="background: #eff6ff; padding: 1rem; border-radius: 0.5rem;">
+                    • Mettre en place des tests unitaires utiles dans TaskBoard Pro
+                </div>
+            </div>
+            
+            <!-- Slide 2-bis  -->
+            <div class="slide">
+                <h2>📚 Glossaire : Vocabulaire des tests</h2>
+                
+                <div style="display: grid; gap: 1rem; margin-top: 2rem;">
+                    
+                    <div style="background: #eff6ff; border-left: 6px solid #3b82f6; padding: 1.5rem; border-radius: 0.5rem;">
+                        <h3 style="color: #1e40af; font-size: 1.3rem; margin-bottom: 0.5rem;">🎯 Assertion</h3>
+                        <p style="font-size: 1.1rem;">Vérification qu'une condition est vraie. Utilise <code>expect()</code> avec un matcher.</p>
+                    </div>
+                    
+                    <div style="background: #fef9c3; border-left: 6px solid #f59e0b; padding: 1.5rem; border-radius: 0.5rem;">
+                        <h3 style="color: #92400e; font-size: 1.3rem; margin-bottom: 0.5rem;">🎭 Mock</h3>
+                        <p style="font-size: 1.1rem;">Données simulées pour tester en isolation, sans dépendance externe (pas de vraie base de données, pas de vraie API).</p>
+                    </div>
+        
+                    
+                    <div style="background: #fce7f3; border-left: 6px solid #ec4899; padding: 1.5rem; border-radius: 0.5rem;">
+                        <h3 style="color: #9f1239; font-size: 1.3rem; margin-bottom: 0.5rem;">🔍 Spy</h3>
+                        <p style="font-size: 1.1rem;">Fonction qui observe les appels à une méthode (combien de fois, avec quels paramètres).</p>
+                    </div>
+                    
+                    <div style="background: #f0fdf4; border-left: 6px solid #22c55e; padding: 1.5rem; border-radius: 0.5rem;">
+                        <h3 style="color: #15803d; font-size: 1.3rem; margin-bottom: 0.5rem;">📦 Fixture</h3>
+                        <p style="font-size: 1.1rem;">Enveloppe créée par TestBed qui contient le composant, son DOM et ses méthodes de test.</p>
+                    </div>
+                    
+                    <div style="background: #fef2f2; border-left: 6px solid #ef4444; padding: 1.5rem; border-radius: 0.5rem;">
+                        <h3 style="color: #7f1d1d; font-size: 1.3rem; margin-bottom: 0.5rem;">🔄 detectChanges()</h3>
+                        <p style="font-size: 1.1rem;">Méthode qui force Angular à mettre à jour le template après une modification de données.</p>
+                    </div>
+                    
+                    <div style="background: #f3e8ff; border-left: 6px solid #a855f7; padding: 1.5rem; border-radius: 0.5rem;">
+                        <h3 style="color: #6b21a8; font-size: 1.3rem; margin-bottom: 0.5rem;">🧪 Test Runner</h3>
+                        <p style="font-size: 1.1rem;">Outil qui exécute les tests dans un environnement (navigateur). Dans Angular : Karma.</p>
+                    </div>
+                    
+                    <div style="background: #ecfeff; border-left: 6px solid #06b6d4; padding: 1.5rem; border-radius: 0.5rem;">
+                        <h3 style="color: #0e7490; font-size: 1.3rem; margin-bottom: 0.5rem;">📊 Code Coverage</h3>
+                        <p style="font-size: 1.1rem;">Pourcentage de code couvert par les tests. Indique les parties non testées du code.</p>
+                    </div>
+                    
+                    <div style="background: #fef3c7; border-left: 6px solid #f59e0b; padding: 1.5rem; border-radius: 0.5rem;">
+                        <h3 style="color: #92400e; font-size: 1.3rem; margin-bottom: 0.5rem;">🎪 Matcher</h3>
+                        <p style="font-size: 1.1rem;">Méthode de comparaison utilisée avec expect() (toBe, toEqual, toContain...).</p>
+                    </div>
+                    
+                </div>
+                
+                <div class="alert alert-blue" style="margin-top: 2rem;">
+                    <strong>💡 Conseil :</strong> Gardez ce vocabulaire en tête pendant toute la formation !
+                </div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="slide">
+                <h2>Pourquoi tester son code ?</h2>
+                <div class="grid-2">
+                    <div class="box box-red">
+                        <h3 style="color: #dc2626;">❌ Sans tests</h3>
+                        <ul>
+                            <li>• On peut introduire des erreurs sans s'en rendre compte</li>
+                            <li>• Une modification peut casser un autre fichier</li>
+                            <li>• C'est difficile à vérifier manuellement</li>
+                            <li>• Le projet devient fragile en grandissant</li>
+                        </ul>
+                    </div>
+                    <div class="box box-green">
+                        <h3 style="color: #16a34a;">✅ Avec tests</h3>
+                        <ul>
+                            <li>• On vérifie automatiquement que le code fonctionne</li>
+                            <li>• On détecte les erreurs avant que l'utilisateur ne les voie</li>
+                            <li>• On a un filet de sécurité</li>
+                            <li>• On développe plus vite, car on peut modifier le code sans peur</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="alert alert-blue" style="text-align: center; font-size: 1.5rem; font-weight: bold;">
+                    → Les tests sont une assurance qualité 🛡️
+                </div>
+            </div>
+            
+            <!-- Slide 4 -->
+            <div class="slide">
+                <h2>Quand les tests sauvent la mise</h2>
+                
+                <div class="scenario" style="border-color: #a855f7;">
+                    <h3 style="color: #7e22ce;">📦 Scénario 1 : Mise à jour Angular 17 → 18</h3>
+                    <div class="grid-2" style="margin-top: 1rem;">
+                        <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem;">
+                            <strong style="color: #dc2626;">❌ Sans tests :</strong>
+                            <p>Un composant casse sans prévenir</p>
+                        </div>
+                        <div style="background: #f0fdf4; padding: 1rem; border-radius: 0.5rem;">
+                            <strong style="color: #16a34a;">✅ Avec tests :</strong>
+                            <p>Les tests échouent → vous êtes alerté immédiatement</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="scenario" style="border-color: #f97316;">
+                    <h3 style="color: #ea580c;">🔧 Scénario 2 : Refactoring du TaskService</h3>
+                    <div class="grid-2" style="margin-top: 1rem;">
+                        <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem;">
+                            <strong style="color: #dc2626;">❌ Sans tests :</strong>
+                            <p>Vous changez la logique interne, incertitude totale</p>
+                        </div>
+                        <div style="background: #f0fdf4; padding: 1rem; border-radius: 0.5rem;">
+                            <strong style="color: #16a34a;">✅ Avec tests :</strong>
+                            <p>Les tests garantissent que tout fonctionne toujours</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="scenario" style="border-color: #3b82f6;">
+                    <h3 style="color: #2563eb;">👤 Scénario 3 : Nouveau développeur dans l'équipe</h3>
+                    <div class="grid-2" style="margin-top: 1rem;">
+                        <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem;">
+                            <strong style="color: #dc2626;">❌ Sans tests :</strong>
+                            <p>Il modifie du code sans comprendre l'impact</p>
+                        </div>
+                        <div style="background: #f0fdf4; padding: 1rem; border-radius: 0.5rem;">
+                            <strong style="color: #16a34a;">✅ Avec tests :</strong>
+                            <p>Les tests échouent → il voit ce qu'il a cassé</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-yellow">
+                    <strong>💡 Exemple TaskBoard Pro :</strong> Sans tests, une erreur dans <code>addTask()</code> pourrait passer inaperçue jusqu'à la production !
+                </div>
+            </div>
+            
+            <!-- Slide 5 -->
+            <div class="slide">
+                <h2>Les différents types de tests</h2>
+                
+                <div style="background: linear-gradient(to right, #3b82f6, #2563eb); color: white; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                    <h3 style="color: white;">🔬 1. Tests unitaires ⭐ (focus de ce cours)</h3>
+                    <ul style="margin-top: 0.5rem;">
+                        <li>• Tester une seule unité de code (fonction, service, composant)</li>
+                        <li>• Rapide et isolé</li>
+                        <li>• Comprendre rapidement si un morceau du code fonctionne</li>
+                    </ul>
+                </div>
+                
+                <div style="background: linear-gradient(to right, #a855f7, #9333ea); color: white; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                    <h3 style="color: white;">🔗 2. Tests d'intégration</h3>
+                    <ul style="margin-top: 0.5rem;">
+                        <li>• Vérifier que plusieurs composants/services fonctionnent bien ensemble</li>
+                        <li>• Utilisés dans les projets complexes</li>
+                    </ul>
+                </div>
+                
+                <div style="background: linear-gradient(to right, #22c55e, #16a34a); color: white; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                    <h3 style="color: white;">🌐 3. Tests end-to-end (E2E)</h3>
+                    <ul style="margin-top: 0.5rem;">
+                        <li>• Simuler un vrai utilisateur dans le navigateur</li>
+                        <li>• Vérifier qu'un scénario complet fonctionne</li>
+                        <li>• Outils : Cypress, Playwright</li>
+                    </ul>
+                </div>
+                
+                <div style="background: linear-gradient(to right, #f97316, #ea580c); color: white; padding: 1.5rem; border-radius: 0.5rem;">
+                    <h3 style="color: white;">🎨 4. Tests visuels / UI</h3>
+                    <ul style="margin-top: 0.5rem;">
+                        <li>• Vérifier que l'interface n'a pas changé visuellement</li>
+                        <li>• Outils : Storybook + Chromatic</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Slide 6 -->
+            <div class="slide">
+                <h2>Qu'est-ce qu'un test unitaire ?</h2>
+                
+                <div class="box box-blue" style="padding: 2rem; margin-bottom: 2rem;">
+                    <h3 style="color: #1e40af;">📖 Définition</h3>
+                    <p style="font-size: 1.3rem; line-height: 1.8;">
+                        Un test unitaire vérifie qu'une <strong style="color: #2563eb;">petite partie du code</strong> (une méthode, un composant, un service) fonctionne correctement de manière <strong style="color: #2563eb;">isolée</strong>.
+                    </p>
+                </div>
+                
+                <div style="border: 2px solid #d1d5db; border-radius: 0.5rem; padding: 2rem;">
+                    <h3>✨ Caractéristiques</h3>
+                    <div class="grid-2" style="margin-top: 1rem; gap: 1.5rem;">
+                        <div class="characteristic">
+                            <span class="icon">✅</span>
+                            <div>
+                                <strong>Teste UNE fonctionnalité à la fois</strong>
+                                <p style="color: #6b7280;">Focus sur un seul comportement</p>
+                            </div>
+                        </div>
+                        <div class="characteristic">
+                            <span class="icon">⚡</span>
+                            <div>
+                                <strong>S'exécute rapidement</strong>
+                                <p style="color: #6b7280;">En millisecondes</p>
+                            </div>
+                        </div>
+                        <div class="characteristic">
+                            <span class="icon">🔒</span>
+                            <div>
+                                <strong>Ne dépend pas d'éléments externes</strong>
+                                <p style="color: #6b7280;">Pas de base de données, pas d'API</p>
+                            </div>
+                        </div>
+                        <div class="characteristic">
+                            <span class="icon">🔄</span>
+                            <div>
+                                <strong>Reproductible à l'infini</strong>
+                                <p style="color: #6b7280;">Même résultat à chaque fois</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-yellow" style="margin-top: 2rem;">
+                    <strong>💡 Analogie :</strong> Comme tester chaque ingrédient d'une recette avant de cuisiner le plat complet
+                </div>
+            </div>
+            
+            <!-- Slide 7 -->
+            <div class="slide">
+                <h2>Le pattern AAA (Arrange-Act-Assert)</h2>
+                <p style="font-size: 1.3rem; color: #374151; margin-bottom: 2rem;">
+                    Tous les tests suivent cette structure en 3 étapes :
+                </p>
+                
+                <div style="background: #faf5ff; border-left: 8px solid #a855f7; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0; margin-bottom: 1rem;">
+                    <h3 style="color: #7e22ce;">🎯 ARRANGE : Préparer les données</h3>
+                    <ul style="margin-top: 0.5rem;">
+                        <li>• Créer les objets nécessaires</li>
+                        <li>• Initialiser les valeurs</li>
+                        <li>• Configurer l'environnement de test</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #eff6ff; border-left: 8px solid #3b82f6; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0; margin-bottom: 1rem;">
+                    <h3 style="color: #1e40af;">⚡ ACT : Exécuter l'action</h3>
+                    <ul style="margin-top: 0.5rem;">
+                        <li>• Appeler la méthode à tester</li>
+                        <li>• Déclencher l'événement</li>
+                        <li>• Exécuter le comportement</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #f0fdf4; border-left: 8px solid #22c55e; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0;">
+                    <h3 style="color: #15803d;">✅ ASSERT : Vérifier le résultat</h3>
+                    <ul style="margin-top: 0.5rem;">
+                        <li>• Comparer avec le résultat attendu</li>
+                        <li>• Utiliser expect()</li>
+                        <li>• Valider le comportement</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #1f2937; color: white; padding: 1.5rem; border-radius: 0.5rem; margin-top: 2rem; font-family: 'Courier New', monospace;">
+                    <div style="color: #c084fc; margin-bottom: 0.5rem;">// ARRANGE : Préparer</div>
+                    <div style="margin-bottom: 1rem;">const service = new TaskService();</div>
+                    <div style="color: #60a5fa; margin-bottom: 0.5rem;">// ACT : Exécuter</div>
+                    <div style="margin-bottom: 1rem;">service.addTask(task);</div>
+                    <div style="color: #4ade80; margin-bottom: 0.5rem;">// ASSERT : Vérifier</div>
+                    <div>expect(service.getTasks().length).toBe(1);</div>
+                </div>
+            </div>
+            
+            <!-- Slide 8 -->
+            <div class="slide">
+                <h2>Pyramide des tests</h2>
+                
+                <div class="pyramid">
+                    <div class="pyramid-level pyramid-e2e">
+                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🌐 E2E</div>
+                        <div style="font-size: 0.9rem;">Peu nombreux • Lents • Coûteux</div>
+                    </div>
+                    <div class="pyramid-level pyramid-integration">
+                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔗 Intégration</div>
+                        <div style="font-size: 0.9rem;">Moyennement nombreux</div>
+                    </div>
+                    <div class="pyramid-level pyramid-unit">
+                        <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">🔬 Unitaires</div>
+                        <div style="font-size: 1rem;">Très nombreux • Rapides • Peu coûteux</div>
+                    </div>
+                </div>
+                
+                <div class="box box-blue" style="padding: 2rem; margin-top: 3rem;">
+                    <h3 style="color: #1e40af; text-align: center; margin-bottom: 1rem;">📊 Règle d'or de la pyramide</h3>
+                    <div style="text-align: center; font-size: 1.3rem;">
+                        <div style="margin: 0.5rem 0;"><strong style="color: #16a34a;">70%</strong> tests unitaires</div>
+                        <div style="margin: 0.5rem 0;"><strong style="color: #ea580c;">20%</strong> tests d'intégration</div>
+                        <div style="margin: 0.5rem 0;"><strong style="color: #dc2626;">10%</strong> tests E2E</div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-yellow" style="margin-top: 2rem;">
+                    <strong>💡 Principe :</strong> Plus on monte dans la pyramide, plus les tests sont coûteux en temps et en maintenance
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button id="prevBtn" onclick="changeSlide(-1)">← Précédent</button>
+            <div class="indicators" id="indicators"></div>
+            <button onclick="goHome()" style="background: #f59e0b; margin: 0 1rem;">🏠 Menu</button>
+            <button id="nextBtn" onclick="changeSlide(1)">Suivant →</button>
+        </div>
+    </div>
+    
+
+      <script src="navigation.js"></script>
+    <script>
+        initNavigation(1); // Slides 1-8
+    </script>
+</body>
+</html>

@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tests Unitaires Angular - Partie 2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f3f4f6;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .presentation {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .header {
+            background: #1e3a8a;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .slide-container {
+            flex: 1;
+            padding: 2rem;
+            overflow: hidden;
+        }
+        
+        .slide {
+            background: white;
+            height: 100%;
+            padding: 3rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        .navigation {
+            background: #e5e7eb;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:disabled {
+            background: #d1d5db;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        button:not(:disabled) {
+            background: #2563eb;
+            color: white;
+        }
+        
+        button:not(:disabled):hover {
+            background: #1d4ed8;
+        }
+        
+        .indicators {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #9ca3af;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .indicator.active {
+            background: #2563eb;
+            width: 32px;
+            border-radius: 6px;
+        }
+        
+        h2 {
+            font-size: 2.5rem;
+            color: #1e3a8a;
+            margin-bottom: 2rem;
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .code-block {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            font-weight: 700;
+        }
+
+         .code-block.light {
+            background: white;
+            color: #1f2937;
+            font-weight: 700;
+         }
+        .code-comment {
+            color: #9ca3af;
+        }
+        
+        .code-keyword {
+            color: #f472b6;
+        }
+        
+        .code-string {
+            color: #86efac;
+        }
+        
+        .code-function {
+            color: #60a5fa;
+            font-weight: 700;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        
+        th {
+            background: #1e3a8a;
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-size: 1.1rem;
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 1rem;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        
+        .alert {
+            padding: 1.5rem;
+            border-left: 8px solid;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+        
+        .alert-blue {
+            background: #dbeafe;
+            border-color: #2563eb;
+        }
+        
+        .alert-yellow {
+            background: #fef9c3;
+            border-color: #eab308;
+        }
+        
+        .alert-red {
+            background: #fee2e2;
+            border-color: #ef4444;
+        }
+        
+        .flow-step {
+            background: white;
+            border: 3px solid #3b82f6;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .flow-arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: #3b82f6;
+            margin: 0.5rem 0;
+        }
+        
+        .key-concept {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        ul {
+            list-style: none;
+            padding-left: 1.5rem;
+        }
+        
+        li {
+            margin: 0.75rem 0;
+            font-size: 1.1rem;
+        }
+        
+        code {
+            background: #e5e7eb;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+            color: #1f2937;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="header">
+            <div>
+                <strong>Tests Unitaires Angular - Partie 2 : Outils et Syntaxe</strong>
+            </div>
+            <div id="slideCounter">Slide 9 / 20</div>
+        </div>
+        
+        <div class="slide-container">
+            <!-- Slide 9 -->
+            <div class="slide active">
+                <h2>Les 3 outils Angular pour tester</h2>
+                
+                <div style="display: flex; flex-direction: column; gap: 1.5rem; margin: 2rem 0;">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 2rem;">
+                        <div style="font-size: 4rem;">🧪</div>
+                        <div style="flex: 1;">
+                            <h3 style="color: white; font-size: 2rem; margin-bottom: 0.5rem;">Jasmine</h3>
+                            <p style="font-size: 1.2rem;">Framework de test pour écrire les tests</p>
+                        </div>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 2rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 2rem;">
+                        <div style="font-size: 4rem;">🚀</div>
+                        <div style="flex: 1;">
+                            <h3 style="color: white; font-size: 2rem; margin-bottom: 0.5rem;">Karma</h3>
+                            <p style="font-size: 1.2rem;">Test runner qui exécute les tests dans un navigateur</p>
+                        </div>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 2rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 2rem;">
+                        <div style="font-size: 4rem;">🛠️</div>
+                        <div style="flex: 1;">
+                            <h3 style="color: white; font-size: 2rem; margin-bottom: 0.5rem;">TestBed</h3>
+                            <p style="font-size: 1.2rem;">Environnement de test Angular pour compiler les composants</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-blue">
+                    <strong style="font-size: 1.3rem;">✅ Tous installés par défaut avec Angular CLI</strong>
+                </div>
+            </div>
+            
+            <!-- Slide 10 -->
+            <div class="slide">
+                <h2>Présentation de Jasmine</h2>
+                
+                <div class="key-concept">
+                    <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">
+                        🧪 Jasmine est le framework de test utilisé par défaut dans Angular
+                    </div>
+                    <p style="font-size: 1.2rem;">
+                        C'est une bibliothèque JavaScript qui permet d'écrire des tests de manière lisible et expressive.
+                    </p>
+                </div>
+                
+                <div style="background: white; border: 3px solid #8b5cf6; border-radius: 0.5rem; padding: 2rem; margin: 2rem 0;">
+                    <h3 style="color: #7c3aed;">✨ Caractéristiques</h3>
+                    <ul style="margin-top: 1rem; font-size: 1.2rem;">
+                        <li><strong>✅ Syntaxe claire et humaine</strong> - Facile à lire et à comprendre</li>
+                        <li><strong>✅ Pas de dépendances externes</strong> - Fonctionne directement</li>
+                        <li><strong>✅ Intégré nativement dans Angular CLI</strong> - Prêt à l'emploi</li>
+                        <li><strong>✅ Utilisé par des milliers d'applications</strong> - Standard de l'industrie</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-yellow">
+                    <strong>🎯 Mission de Jasmine :</strong> Écrire et structurer les tests de manière lisible et maintenable
+                </div>
+            </div>
+            
+            <!-- Slide 11 -->
+            <div class="slide">
+                <h2>Jasmine en 3 mots-clés</h2>
+                
+                <div style="background: linear-gradient(to right, #fbbf24, #f59e0b); color: white; padding: 2rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                    <h3 style="color: white; font-size: 1.8rem; margin-bottom: 1rem;">1️⃣ describe() → "Quel bloc je teste ?"</h3>
+                    <div class="code-block light" >
+                        <span class="code-function">describe</span>(<span class="code-string">'TaskService'</span>, () => { ... });
+                    </div>
+                    <p style="font-size: 1.2rem;">Regroupe un ensemble de tests liés</p>
+                </div>
+                
+                <div style="background: linear-gradient(to right, #3b82f6, #2563eb); color: white; padding: 2rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                    <h3 style="color: white; font-size: 1.8rem; margin-bottom: 1rem;">2️⃣ it() → "Qu'est-ce que ce test doit vérifier ?"</h3>
+                    <div class="code-block light" >
+                        <span class="code-function">it</span>(<span class="code-string">'devrait ajouter une tâche'</span>, () => { ... });
+                    </div>
+                    <p style="font-size: 1.2rem;">Décrit UN test spécifique</p>
+                </div>
+                
+                <div style="background: linear-gradient(to right, #10b981, #059669); color: white; padding: 2rem; border-radius: 0.5rem;">
+                    <h3 style="color: white; font-size: 1.8rem; margin-bottom: 1rem;">3️⃣ expect() → "Quel résultat j'attends ?"</h3>
+                    <div class="code-block light" >
+                        <span class="code-function">expect</span>(result).<span class="code-function">toBe</span>(<span class="code-string">1</span>);
+                    </div>
+                    <p style="font-size: 1.2rem;">Compare une valeur obtenue avec une valeur attendue</p>
+                </div>
+            </div>
+            
+            <!-- Slide 12 -->
+            <div class="slide">
+                <h2>Anatomie d'un test Jasmine</h2>
+                
+                <div class="code-block" style="font-size: 1rem;">
+                    <span class="code-function">describe</span>(<span class="code-string">'TaskService'</span>, () => {
+                    <br><br>
+                    &nbsp;&nbsp;<span class="code-function">it</span>(<span class="code-string">'devrait ajouter une tâche correctement'</span>, () => {
+                    <br><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// ARRANGE : on instancie le service</span>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">const</span> service = <span class="code-keyword">new</span> TaskService();
+                    <br><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// ACT : on ajoute une tâche</span>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;service.<span class="code-function">addTask</span>({ 
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id: <span class="code-string">1</span>, 
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;title: <span class="code-string">'Apprendre Angular'</span> 
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;});
+                    <br><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// ASSERT : la tâche doit être dans la liste</span>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">const</span> tasks = service.<span class="code-function">getTasks</span>();
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-function">expect</span>(tasks.length).<span class="code-function">toBe</span>(<span class="code-string">1</span>);
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-function">expect</span>(tasks[<span class="code-string">0</span>].title).<span class="code-function">toBe</span>(<span class="code-string">'Apprendre Angular'</span>);
+                    <br>
+                    &nbsp;&nbsp;});
+                    <br><br>
+                    });
+                </div>
+                
+                <div class="alert alert-blue" style="margin-top: 2rem;">
+                    <strong>💡 Structure claire :</strong> Un test Jasmine dit ce qu'on teste (describe), ce que ça doit faire (it), et ce qu'on attend du résultat (expect)
+                </div>
+            </div>
+            
+            <!-- Slide 13 -->
+            <div class="slide">
+                <h2>Les fonctions Jasmine essentielles</h2>
+                
+                <div style="display: grid; gap: 1.5rem; margin-top: 2rem;">
+                    
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 0.5rem;">
+                        <h3 style="color: white; font-size: 1.5rem; margin-bottom: 0.5rem;">describe()</h3>
+                        <p style="font-size: 1.1rem; margin-bottom: 0.5rem; opacity: 0.9;">Groupe de tests</p>
+                        <div class="code-block" style="background: rgba(0,0,0,0.3); margin: 0;">
+                            describe('TaskService', () => {...})
+                        </div>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 1.5rem; border-radius: 0.5rem;">
+                        <h3 style="color: white; font-size: 1.5rem; margin-bottom: 0.5rem;">it()</h3>
+                        <p style="font-size: 1.1rem; margin-bottom: 0.5rem; opacity: 0.9;">Un test spécifique</p>
+                        <div class="code-block" style="background: rgba(0,0,0,0.3); margin: 0;">
+                            it('doit ajouter une tâche', () => {...})
+                        </div>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 1.5rem; border-radius: 0.5rem;">
+                        <h3 style="color: white; font-size: 1.5rem; margin-bottom: 0.5rem;">expect()</h3>
+                        <p style="font-size: 1.1rem; margin-bottom: 0.5rem; opacity: 0.9;">Assertion</p>
+                        <div class="code-block" style="background: rgba(0,0,0,0.3); margin: 0;">
+                            expect(tasks.length).toBe(4)
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; padding: 1.5rem; border-radius: 0.5rem;">
+                            <h3 style="color: white; font-size: 1.5rem; margin-bottom: 0.5rem;">beforeEach()</h3>
+                            <p style="font-size: 1.1rem; margin-bottom: 0.5rem; opacity: 0.9;">Exécuté avant chaque test</p>
+                            <div class="code-block" style="background: rgba(0,0,0,0.3); margin: 0; font-size: 0.85rem;">
+                                beforeEach(() => {<br>
+                                &nbsp;&nbsp;service = new TaskService()<br>
+                                })
+                            </div>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; padding: 1.5rem; border-radius: 0.5rem;">
+                            <h3 style="color: white; font-size: 1.5rem; margin-bottom: 0.5rem;">afterEach()</h3>
+                            <p style="font-size: 1.1rem; margin-bottom: 0.5rem; opacity: 0.9;">Nettoyer les ressources (timers, abonnements, DOM)</p>
+                            <div class="code-block" style="background: rgba(0,0,0,0.3); margin: 0; font-size: 0.85rem;">
+                                afterEach(() => {<br>
+                                &nbsp;&nbsp;service.clear()<br>
+                                })
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                
+
+                <div style="background: #fef3c7; border-left: 8px solid #f59e0b; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0; margin-top: 1rem;">
+                    <div class="alert alert-yellow" style="margin-top: 0.5rem;">
+                        <strong>⚡ beforeEach()</strong> est très important : il garantit que chaque test démarre avec un état propre et isolé
+                    </div>
+                    <strong style="color: #92400e;">💡 afterEach() - Quand l'utiliser ?</strong>
+                    <ul style="margin-top: 0.5rem; font-size: 1rem; color: #78350f;">
+                        <li> Nettoyer les timers (setTimeout, setInterval)</li>
+                        <li> Se désabonner des Observables</li>
+                        <li> Supprimer des éléments du DOM</li>
+                        <li> Restaurer des mocks ou spies</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Slide 14 -->
+            <div class="slide">
+                <h2>Les matchers Jasmine</h2>
+                
+                <div style="background: #eff6ff; border: 3px solid #3b82f6; border-radius: 0.5rem; padding: 2rem; margin-bottom: 2rem;">
+                    <h3 style="color: #1e40af;">🎯 Qu'est-ce qu'un Matcher ?</h3>
+                    <p style="font-size: 1.2rem; margin-top: 1rem;">
+                        Une méthode utilisée avec <code>expect()</code> pour définir le type de vérification que doit effectuer un test.
+                    </p>
+                </div>
+                
+                <div style="background: white; border: 2px solid #e5e7eb; border-radius: 0.5rem; padding: 2rem;">
+                    <h3>📝 Structure</h3>
+                    <div class="code-block">
+                        <span class="code-function">expect</span>(valeurObtenue).<span class="code-function">matcher</span>(valeurAttendue);
+                    </div>
+                </div>
+                
+                <div style="background: #fef9c3; border-left: 8px solid #eab308; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0; margin-top: 2rem;">
+                    <h3 style="color: #854d0e;">✨ Pourquoi les matchers sont importants ?</h3>
+                    <ul style="margin-top: 1rem;">
+                        <li><strong>✅</strong> Rendent les tests expressifs et lisibles</li>
+                        <li><strong>✅</strong> Couvrent différents types de validation</li>
+                        <li><strong>✅</strong> Facilitent le diagnostic des erreurs</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Slide 15 -->
+            <div class="slide">
+                <h2>Les matchers courants</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
+                    
+                    <div style="background: #eff6ff; border: 3px solid #3b82f6; border-radius: 0.5rem; padding: 1.5rem;">
+                        <h3 style="color: #1e40af; font-size: 1.3rem; margin-bottom: 0.5rem;">toBe()</h3>
+                        <p style="color: #6b7280; margin-bottom: 0.75rem;">Égalité stricte (===)</p>
+                        <div class="code-block" style="margin: 0;">
+                            expect(age).toBe(25)
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f0fdf4; border: 3px solid #22c55e; border-radius: 0.5rem; padding: 1.5rem;">
+                        <h3 style="color: #15803d; font-size: 1.3rem; margin-bottom: 0.5rem;">toEqual()</h3>
+                        <p style="color: #6b7280; margin-bottom: 0.75rem;">Égalité de contenu (objets/tableaux)</p>
+                        <div class="code-block" style="margin: 0;">
+                            expect(task).toEqual({ id: 1 })
+                        </div>
+                    </div>
+                    
+                    <div style="background: #fef9c3; border: 3px solid #eab308; border-radius: 0.5rem; padding: 1.5rem;">
+                        <h3 style="color: #854d0e; font-size: 1.3rem; margin-bottom: 0.5rem;">toContain()</h3>
+                        <p style="color: #6b7280; margin-bottom: 0.75rem;">Contient un élément</p>
+                        <div class="code-block" style="margin: 0;">
+                            expect(tasks).toContain(task1)
+                        </div>
+                    </div>
+                    
+                    <div style="background: #fce7f3; border: 3px solid #ec4899; border-radius: 0.5rem; padding: 1.5rem;">
+                        <h3 style="color: #9f1239; font-size: 1.3rem; margin-bottom: 0.5rem;">toBeTruthy() / toBeFalsy()</h3>
+                        <p style="color: #6b7280; margin-bottom: 0.75rem;">Vérifie vrai ou faux</p>
+                        <div class="code-block" style="margin: 0;">
+                            expect(isValid).toBeTruthy()
+                        </div>
+                    </div>
+                    
+                    <div style="background: #fef2f2; border: 3px solid #ef4444; border-radius: 0.5rem; padding: 1.5rem;">
+                        <h3 style="color: #7f1d1d; font-size: 1.3rem; margin-bottom: 0.5rem;">toThrow()</h3>
+                        <p style="color: #6b7280; margin-bottom: 0.75rem;">Vérifie qu'une erreur est levée</p>
+                        <div class="code-block" style="margin: 0;">
+                            expect(() => divide(1,0)).toThrow()
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f3e8ff; border: 3px solid #a855f7; border-radius: 0.5rem; padding: 1.5rem;">
+                        <h3 style="color: #6b21a8; font-size: 1.3rem; margin-bottom: 0.5rem;">toBeGreaterThan()</h3>
+                        <p style="color: #6b7280; margin-bottom: 0.75rem;">Plus grand que</p>
+                        <div class="code-block" style="margin: 0;">
+                            expect(score).toBeGreaterThan(100)
+                        </div>
+                    </div>
+                    
+                    <div style="background: #ecfeff; border: 3px solid #06b6d4; border-radius: 0.5rem; padding: 1.5rem;">
+                        <h3 style="color: #0e7490; font-size: 1.3rem; margin-bottom: 0.5rem;">toBeLessThan()</h3>
+                        <p style="color: #6b7280; margin-bottom: 0.75rem;">Plus petit que</p>
+                        <div class="code-block" style="margin: 0;">
+                            expect(age).toBeLessThan(100)
+                        </div>
+                    </div>
+                    
+                    <div style="background: #fef3c7; border: 3px solid #f59e0b; border-radius: 0.5rem; padding: 1.5rem;">
+                        <h3 style="color: #92400e; font-size: 1.3rem; margin-bottom: 0.5rem;">toHaveBeenCalled() ⭐</h3>
+                        <p style="color: #6b7280; margin-bottom: 0.75rem;">Vérifie qu'un spy a été appelé</p>
+                        <div class="code-block" style="margin: 0;">
+                            expect(mockFn).toHaveBeenCalled()
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <div class="alert alert-blue" style="margin-top: 2rem;">
+                    <strong>💡 Astuce :</strong> <code>toBe()</code> pour les valeurs primitives (number, string, boolean), <code>toEqual()</code> pour les objets et tableaux
+                </div>
+            </div>
+            
+            <!-- Slide 16 -->
+            <div class="slide">
+                <h2>Qu'est-ce que Karma ?</h2>
+                
+                <div class="key-concept">
+                    <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">
+                        🚀 Karma est le test runner utilisé par Angular pour lancer et exécuter les tests
+                    </div>
+                </div>
+                
+                <div style="background: white; border: 3px solid #f59e0b; border-radius: 0.5rem; padding: 2rem; margin: 2rem 0;">
+                    <h3 style="color: #d97706;">🎯 Rôle de Karma</h3>
+                    <ul style="margin-top: 1rem; font-size: 1.2rem;">
+                        <li><strong>✅</strong> Charge le projet Angular en mode test</li>
+                        <li><strong>✅</strong> Lance un navigateur réel (Chrome par défaut)</li>
+                        <li><strong>✅</strong> Exécute les tests Jasmine</li>
+                        <li><strong>✅</strong> Affiche les résultats en temps réel</li>
+                        <li><strong>✅</strong> Relance automatiquement les tests à chaque modification</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #dbeafe; border-left: 8px solid #3b82f6; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0;">
+                    <h3 style="color: #1e40af;">💡 Pourquoi un test runner ?</h3>
+                    <ul style="margin-top: 0.5rem; font-size: 1.1rem;">
+                        <li><strong>•</strong> Simule une exécution réelle dans un navigateur</li>
+                        <li><strong>•</strong> Garantit des tests fidèles à l'environnement utilisateur</li>
+                        <li><strong>•</strong> Automatise l'exécution pendant le développement</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Slide 17 -->
+            <div class="slide">
+                <h2>Jasmine + Karma : Comment ça marche ?</h2>
+                
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; text-align: center; font-size: 1.3rem; font-weight: bold;">
+                    FLUX D'EXÉCUTION
+                </div>
+                
+                <div class="flow-step">
+                    <strong style="color: #7c3aed; font-size: 1.3rem;">1️⃣ Vous écrivez les tests</strong>
+                    <p style="margin-top: 0.5rem;">Dans des fichiers <code>*.spec.ts</code> avec la syntaxe Jasmine : <code>describe()</code>, <code>it()</code>, <code>expect()</code></p>
+                </div>
+                
+                <div class="flow-arrow">↓</div>
+                
+                <div class="flow-step">
+                    <strong style="color: #7c3aed; font-size: 1.3rem;">2️⃣ Vous lancez <code>ng test</code></strong>
+                </div>
+                
+                <div class="flow-arrow">↓</div>
+                
+                <div class="flow-step">
+                    <strong style="color: #7c3aed; font-size: 1.3rem;">3️⃣ Karma démarre</strong>
+                    <p style="margin-top: 0.5rem;">Compile le projet, ouvre Chrome, charge Jasmine et tous les fichiers <code>*.spec.ts</code></p>
+                </div>
+                
+                <div class="flow-arrow">↓</div>
+                
+                <div class="flow-step">
+                    <strong style="color: #7c3aed; font-size: 1.3rem;">4️⃣ Les tests s'exécutent</strong>
+                    <p style="margin-top: 0.5rem;">Jasmine exécute chaque test, Karma affiche les résultats en temps réel</p>
+                </div>
+                
+                <div class="flow-arrow">↓</div>
+                
+                <div class="flow-step">
+                    <strong style="color: #7c3aed; font-size: 1.3rem;">5️⃣ Interprétation des résultats</strong>
+                    <p style="margin-top: 0.5rem;"><span style="color: #16a34a; font-weight: bold;">✅ Vert = succès</span> • <span style="color: #dc2626; font-weight: bold;">❌ Rouge = échec</span></p>
+                </div>
+                
+                <div class="alert alert-blue" style="margin-top: 2rem; font-size: 1.2rem;">
+                    <strong>En résumé :</strong> Jasmine = écriture et logique des tests • Karma = exécution dans un navigateur réel
+                </div>
+            </div>
+            
+            <!-- Slide 18 -->
+            <div class="slide">
+                <h2>Qu'est-ce que TestBed ?</h2>
+                
+                <div class="key-concept">
+                    <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">
+                        🛠️ TestBed est l'environnement de test Angular
+                    </div>
+                    <p style="font-size: 1.2rem;">
+                        C'est l'outil qui permet de tester des composants Angular avec leur template, leurs dépendances et leur cycle de vie complet.
+                    </p>
+                </div>
+                
+                <div style="background: white; border: 3px solid #3b82f6; border-radius: 0.5rem; padding: 2rem; margin: 2rem 0;">
+                    <h3 style="color: #1e40af;">✨ TestBed permet de :</h3>
+                    <ul style="margin-top: 1rem; font-size: 1.2rem;">
+                        <li><strong>✅</strong> Compiler un composant comme Angular le fait réellement</li>
+                        <li><strong>✅</strong> Gérer son template HTML</li>
+                        <li><strong>✅</strong> Créer l'instance avec injection de dépendances</li>
+                        <li><strong>✅</strong> Gérer @Input, @Output, ViewChild, etc.</li>
+                        <li><strong>✅</strong> Rendre le DOM pour tester le HTML</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-red">
+                    <strong style="font-size: 1.3rem;">⚠️ Sans TestBed :</strong> Pas de DOM, pas de template, pas d'Angular = tests incomplets !
+                </div>
+            </div>
+            
+<!-- Slide 19 -->
+            <div class="slide">
+                <h2>Fixture : l'enveloppe de test</h2>
+                
+                <div style="background: #fef3c7; border: 3px solid #f59e0b; border-radius: 0.5rem; padding: 2rem; margin-bottom: 2rem;">
+                    <h3 style="color: #92400e;">📦 Qu'est-ce qu'une Fixture ?</h3>
+                    <p style="font-size: 1.2rem; margin-top: 1rem;">
+                        La <strong>fixture</strong> est l'objet créé par TestBed qui contient tout ce dont on a besoin pour tester un composant.
+                    </p>
+                </div>
+                
+                <div class="code-block">
+                    <span class="code-keyword">const</span> fixture = TestBed.<span class="code-function">createComponent</span>(TaskHighlight);
+                </div>
+                
+                <div style="background: white; border: 2px solid #e5e7eb; border-radius: 0.5rem; padding: 2rem; margin-top: 2rem;">
+                    <h3>🔍 Accès aux éléments</h3>
+                    
+                    <div style="margin: 1.5rem 0; padding: 1rem; background: #f0fdf4; border-radius: 0.5rem;">
+                        <code style="background: transparent; font-size: 1.1rem;">fixture.componentInstance</code>
+                        <p style="margin-top: 0.5rem;">→ La classe du composant (comme <code>this</code>)</p>
+                    </div>
+                    
+                    <div style="margin: 1.5rem 0; padding: 1rem; background: #dbeafe; border-radius: 0.5rem;">
+                        <code style="background: transparent; font-size: 1.1rem;">fixture.nativeElement</code>
+                        <p style="margin-top: 0.5rem;">→ Le DOM rendu (HTML réel)</p>
+                    </div>
+                    
+                    <div style="margin: 1.5rem 0; padding: 1rem; background: #fef3c7; border-radius: 0.5rem;">
+                        <code style="background: transparent; font-size: 1.1rem;">fixture.debugElement</code>
+                        <p style="margin-top: 0.5rem;">→ Version enrichie du DOM pour les tests</p>
+                    </div>
+                    
+                    <div style="margin: 1.5rem 0; padding: 1rem; background: #fce7f3; border-radius: 0.5rem;">
+                        <code style="background: transparent; font-size: 1.1rem;">fixture.detectChanges()</code>
+                        <p style="margin-top: 0.5rem;">→ Force la détection de changements Angular</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 20 -->
+            <div class="slide">
+                <h2>Structure d'un test avec TestBed</h2>
+                
+                <div class="code-block" style="font-size: 0.95rem;">
+                    <span class="code-function">describe</span>(<span class="code-string">'TaskHighlight'</span>, () => {
+                    <br>
+                    &nbsp;&nbsp;<span class="code-keyword">let</span> component: TaskHighlight;
+                    <br>
+                    &nbsp;&nbsp;<span class="code-keyword">let</span> fixture: ComponentFixture&lt;TaskHighlight&gt;;
+                    <br><br>
+                    &nbsp;&nbsp;<span class="code-function">beforeEach</span>(<span class="code-keyword">async</span> () => {
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">await</span> TestBed.<span class="code-function">configureTestingModule</span>({
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;imports: [TaskHighlight]
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}).<span class="code-function">compileComponents</span>();
+                    <br><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;fixture = TestBed.<span class="code-function">createComponent</span>(TaskHighlight);
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;component = fixture.componentInstance;
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;fixture.<span class="code-function">detectChanges</span>();
+                    <br>
+                    &nbsp;&nbsp;});
+                    <br><br>
+                    &nbsp;&nbsp;<span class="code-function">it</span>(<span class="code-string">'should create'</span>, () => {
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-function">expect</span>(component).<span class="code-function">toBeTruthy</span>();
+                    <br>
+                    &nbsp;&nbsp;});
+                    <br>
+                    });
+                </div>
+                
+                <div style="background: #fef3c7; border: 3px solid #f59e0b; border-radius: 0.5rem; padding: 2rem; margin-top: 2rem;">
+                    <h3 style="color: #92400e;">📝 Étapes clés :</h3>
+                    <ul style="margin-top: 1rem;">
+                        <li><strong>1.</strong> <code>configureTestingModule()</code> → Crée un mini-module de test</li>
+                        <li><strong>2.</strong> <code>compileComponents()</code> → Compile le template et le CSS</li>
+                        <li><strong>3.</strong> <code>createComponent()</code> → Crée une vraie instance</li>
+                        <li><strong>4.</strong> <code>componentInstance</code> → Récupère la classe</li>
+                        <li><strong>5.</strong> <code>detectChanges()</code> → Rend le template initial</li>
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div class="navigation">
+            <button id="prevBtn" onclick="changeSlide(-1)">← Précédent</button>
+            <div class="indicators" id="indicators"></div>
+            <button onclick="goHome()" style="background: #f59e0b; margin: 0 1rem;">🏠 Menu</button>
+            <button id="nextBtn" onclick="changeSlide(1)">Suivant →</button>
+        </div>
+    </div>
+    
+    <script src="navigation.js"></script>
+    <script>
+        initNavigation(9); // Slides 9-20
+    </script>
+</body>
+</html>

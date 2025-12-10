@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tests Unitaires Angular - Partie 3</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f3f4f6; height: 100vh; overflow: hidden; }
+        .presentation { display: flex; flex-direction: column; height: 100vh; }
+        .header { background: #1e3a8a; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .slide-container { flex: 1; padding: 2rem; overflow: hidden; }
+        .slide { background: white; height: 100%; padding: 3rem; border-radius: 0.5rem; box-shadow: 0 20px 50px rgba(0,0,0,0.3); overflow-y: auto; display: none; }
+        .slide.active { display: block; }
+        .navigation { background: #e5e7eb; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        button { padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        button:disabled { background: #d1d5db; color: #9ca3af; cursor: not-allowed; }
+        button:not(:disabled) { background: #2563eb; color: white; }
+        button:not(:disabled):hover { background: #1d4ed8; }
+        .indicators { display: flex; gap: 0.5rem; }
+        .indicator { width: 12px; height: 12px; border-radius: 50%; background: #9ca3af; cursor: pointer; transition: all 0.3s; }
+        .indicator.active { background: #2563eb; width: 32px; border-radius: 6px; }
+        h2 { font-size: 2.5rem; color: #1e3a8a; margin-bottom: 2rem; }
+        h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .code-block { background: #1f2937; color: #e5e7eb; padding: 1.5rem; border-radius: 0.5rem; font-family: 'Courier New', monospace; margin: 1.5rem 0; overflow-x: auto; line-height: 1.6; }
+        .exercise-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 0.5rem; margin: 1.5rem 0; }
+        .alert { padding: 1.5rem; border-left: 8px solid; margin: 1.5rem 0; border-radius: 0 0.5rem 0.5rem 0; }
+        .alert-blue { background: #dbeafe; border-color: #2563eb; }
+        .alert-yellow { background: #fef9c3; border-color: #eab308; }
+        .alert-red { background: #fee2e2; border-color: #ef4444; }
+        .alert-green { background: #dcfce7; border-color: #22c55e; }
+        ul { list-style: none; padding-left: 1.5rem; }
+        li { margin: 0.75rem 0; font-size: 1.1rem; }
+        code { background: #e5e7eb; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-family: 'Courier New', monospace; color: #1f2937; }
+        .warning-box { background: #fef2f2; border: 3px solid #ef4444; border-radius: 0.5rem; padding: 1.5rem; margin: 1.5rem 0; }
+        table { width: 100%; border-collapse: collapse; margin: 2rem 0; }
+        th { background: #1e3a8a; color: white; padding: 1rem; text-align: left; }
+        td { padding: 1rem; border-bottom: 1px solid #e5e7eb; }
+        tr:nth-child(even) { background: #f9fafb; }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="header">
+            <strong>Tests Unitaires Angular - Partie 3 : Pratique Guidée</strong>
+            <div id="slideCounter">Slide 21 / 32</div>
+        </div>
+        
+        <div class="slide-container">
+
+            <!-- Slide 21 -->
+            <div class="slide active">
+                <h2>Exercice 1 - Test simple sans Angular</h2>
+                
+                <div class="exercise-box">
+                    <h3 style="color: white; font-size: 2rem;">🎯 Objectif</h3>
+                    <p style="font-size: 1.3rem; margin-top: 1rem;">Tester une classe TypeScript pure (sans TestBed)</p>
+                </div>
+                
+                <div style="background: #fef3c7; border: 3px solid #f59e0b; border-radius: 0.5rem; padding: 1.5rem; margin: 1.5rem 0;">
+                    <h3 style="color: #92400e;">📝 Instructions</h3>
+                    <ol style="margin-top: 1rem; font-size: 1.1rem; margin-left: 1.5rem;">
+                        <li>Créer le fichier : <code>task-highlight.simple.spec.ts</code></li>
+                        <li>Importer la classe TaskHighlight</li>
+                        <li>Tester l'initialisation du titre</li>
+                        <li>Tester la modification du titre</li>
+                    </ol>
+                </div>
+                
+                <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 0.5rem; padding: 1.5rem; margin: 1.5rem 0;">
+                    <pre style="margin: 0; font-family: 'Courier New', monospace; font-size: 1rem; line-height: 1.8; color: #1e293b;"><span style="color: #0ea5e9;">import</span> { TaskHighlight } <span style="color: #0ea5e9;">from</span> <span style="color: #059669;">'./task-highlight'</span>;
+
+            <span style="color: #8b5cf6;">describe</span>(<span style="color: #059669;">'TaskHighlight'</span>, () => {
+
+            <span style="color: #8b5cf6;">it</span>(<span style="color: #059669;">'devrait initialiser title avec une chaîne vide'</span>, () => {
+                <span style="color: #0ea5e9;">const</span> component = <span style="color: #0ea5e9;">new</span> TaskHighlight();
+                <span style="color: #8b5cf6;">expect</span>(component.title).<span style="color: #8b5cf6;">toBe</span>(<span style="color: #059669;">''</span>);
+            });
+
+            <span style="color: #8b5cf6;">it</span>(<span style="color: #059669;">'devrait permettre de changer le titre'</span>, () => {
+                <span style="color: #0ea5e9;">const</span> component = <span style="color: #0ea5e9;">new</span> TaskHighlight();
+                component.title = <span style="color: #059669;">'Tâche en avant'</span>;
+                <span style="color: #8b5cf6;">expect</span>(component.title).<span style="color: #8b5cf6;">toBe</span>(<span style="color: #059669;">'Tâche en avant'</span>);
+            });
+
+            });</pre>
+                </div>
+                
+                <div class="alert alert-green">
+                    <strong>✅ Points clés :</strong> Pas besoin de TestBed • On instancie directement avec <code>new</code> • Tests rapides et simples
+                </div>
+            </div>
+                        
+           <!-- Slide 22 -->
+            <div class="slide">
+                <h2>Exercice 2 - Tester un service</h2>
+                
+                <div class="exercise-box">
+                    <h3 style="color: white; font-size: 2rem;">🎯 Objectif</h3>
+                    <p style="font-size: 1.3rem; margin-top: 1rem;">Tester TaskService avec des données mockées</p>
+                </div>
+                
+                <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 0.5rem; padding: 1.5rem; margin: 1.5rem 0;">
+                    <pre style="margin: 0; font-family: 'Courier New', monospace; font-size: 0.95rem; line-height: 1.8; color: #1e293b;"><span style="color: #8b5cf6;">describe</span>(<span style="color: #059669;">'TaskService'</span>, () => {
+            <span style="color: #0ea5e9;">let</span> service: TaskService;
+
+            <span style="color: #8b5cf6;">beforeEach</span>(() => {
+                service = <span style="color: #0ea5e9;">new</span> TaskService();
+            });
+
+            <span style="color: #8b5cf6;">it</span>(<span style="color: #059669;">'devrait être créé'</span>, () => {
+                <span style="color: #8b5cf6;">expect</span>(service).<span style="color: #8b5cf6;">toBeTruthy</span>();
+            });
+
+            <span style="color: #8b5cf6;">it</span>(<span style="color: #059669;">'devrait retourner une liste vide au départ'</span>, () => {
+                <span style="color: #8b5cf6;">expect</span>(service.getTasks().length).<span style="color: #8b5cf6;">toBe</span>(<span style="color: #dc2626;">0</span>);
+            });
+
+            <span style="color: #8b5cf6;">it</span>(<span style="color: #059669;">'devrait ajouter une tâche'</span>, () => {
+                <span style="color: #0ea5e9;">const</span> task = { 
+                id: <span style="color: #dc2626;">1</span>, 
+                title: <span style="color: #059669;">'Test'</span>, 
+                completed: <span style="color: #dc2626;">false</span> 
+                };
+                service.addTask(task);
+                
+                <span style="color: #8b5cf6;">expect</span>(service.getTasks().length).<span style="color: #8b5cf6;">toBe</span>(<span style="color: #dc2626;">1</span>);
+                <span style="color: #8b5cf6;">expect</span>(service.getTasks()[<span style="color: #dc2626;">0</span>]).<span style="color: #8b5cf6;">toEqual</span>(task);
+            });
+            });</pre>
+                </div>
+                
+                <div class="alert alert-blue">
+                    <strong>💡 À retenir :</strong> <code>beforeEach()</code> permet d'avoir un service "propre" pour chaque test • Tester le comportement, pas l'implémentation
+                </div>
+            </div>
+
+            <!-- Slide 23 -->
+<div class="slide">
+    <h2>Mocks et Spies en tests unitaires</h2>
+    
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+        <h3 style="color: white; font-size: 1.8rem; margin-bottom: 1rem;">🎯 Rappel : On teste en isolation</h3>
+        <p style="font-size: 1.2rem;">Dans les tests unitaires, on teste UNE unité à la fois, sans dépendre d'éléments externes.</p>
+    </div>
+    
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
+                    
+                    <div style="border: 3px solid #f59e0b; background: #fef3c7; padding: 2rem; border-radius: 0.5rem;">
+                        <h3 style="color: #92400e; font-size: 1.5rem; margin-bottom: 1rem;">🎭 Mock = Données simulées</h3>
+                        <p style="margin-bottom: 1rem;">Créer de fausses données pour tester</p>
+                        
+                        <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0;">
+                            <pre style="margin: 0; font-family: 'Courier New', monospace; font-size: 0.9rem; color: #1e293b;"><span style="color: #6b7280;">// Données mockées</span>
+            <span style="color: #0ea5e9;">const</span> mockTask = {
+            id: <span style="color: #dc2626;">1</span>,
+            title: <span style="color: #059669;">'Test'</span>,
+            completed: <span style="color: #dc2626;">false</span>
+            };</pre>
+                        </div>
+                        
+                        <p style="margin-top: 1rem; font-size: 0.95rem;"><strong>Usage :</strong> Créer des données fictives sans base de données</p>
+                    </div>
+                    
+                    <div style="border: 3px solid #3b82f6; background: #dbeafe; padding: 2rem; border-radius: 0.5rem;">
+                        <h3 style="color: #1e40af; font-size: 1.5rem; margin-bottom: 1rem;">🔍 Spy = Observer une méthode</h3>
+                        <p style="margin-bottom: 1rem;">Vérifier qu'une méthode a été appelée</p>
+                        
+                        <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0;">
+                            <pre style="margin: 0; font-family: 'Courier New', monospace; font-size: 0.9rem; color: #1e293b;"><span style="color: #6b7280;">// Observer un appel</span>
+            <span style="color: #8b5cf6;">spyOn</span>(service, <span style="color: #059669;">'addTask'</span>);
+
+            component.onSubmit();
+
+            <span style="color: #8b5cf6;">expect</span>(service.addTask)
+            .<span style="color: #8b5cf6;">toHaveBeenCalled</span>();</pre>
+                        </div>
+                        
+                        <p style="margin-top: 1rem; font-size: 0.95rem;"><strong>Usage :</strong> Vérifier les interactions entre composants</p>
+                    </div>
+                    
+                </div>
+                
+                <div style="background: #fef3c7; border-left: 8px solid #f59e0b; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0; margin-top: 2rem;">
+                    <h3 style="color: #92400e;">💡 Dans vos exercices</h3>
+                    <ul style="margin-top: 1rem; font-size: 1.1rem;">
+                        <li><strong>• Mock :</strong> Les objets <code>task</code> que vous créez dans les tests</li>
+                        <li><strong>• Spy :</strong> Utile pour tester les <code>@Output</code> et vérifier les appels de méthodes</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-blue" style="margin-top: 1.5rem;">
+                    <strong>📝 Note :</strong> Pour des tests unitaires simples, vous utiliserez surtout des mocks (données). Les spies sont plus utiles pour tester les interactions.
+                </div>
+            </div>
+
+           <!-- Slide 24 -->
+            <div class="slide">
+                <h2>Exercice 3 - Composant avec TestBed</h2>
+                
+                <div class="exercise-box">
+                    <h3 style="color: white; font-size: 2rem;">🎯 Objectif</h3>
+                    <p style="font-size: 1.3rem; margin-top: 1rem;">Tester TaskHighlight avec @Input et le DOM</p>
+                </div>
+                
+                <div style="background: #fef3c7; border: 3px solid #f59e0b; border-radius: 0.5rem; padding: 1.5rem; margin: 1.5rem 0;">
+                    <h3 style="color: #92400e;">📋 Nouveauté : On utilise TestBed</h3>
+                    <p style="font-size: 1.1rem; margin-top: 0.5rem;">
+                        Contrairement aux exercices 1 et 2, ici on teste un <strong>composant Angular</strong> avec son template. 
+                        On doit donc utiliser <strong>TestBed</strong> pour compiler le composant et accéder au DOM.
+                    </p>
+                </div>
+                
+                <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 0.5rem; padding: 1.5rem; margin: 1.5rem 0;">
+                    <pre style="margin: 0; font-family: 'Courier New', monospace; font-size: 0.9rem; line-height: 1.8; color: #1e293b;"><span style="color: #8b5cf6;">describe</span>(<span style="color: #059669;">'TaskHighlight'</span>, () => {
+            <span style="color: #0ea5e9;">let</span> component: TaskHighlight;
+            <span style="color: #0ea5e9;">let</span> fixture: ComponentFixture&lt;TaskHighlight&gt;;
+
+            <span style="color: #8b5cf6;">beforeEach</span>(<span style="color: #0ea5e9;">async</span> () => {
+                <span style="color: #6b7280;">// Configuration du module de test</span>
+                <span style="color: #0ea5e9;">await</span> TestBed.<span style="color: #8b5cf6;">configureTestingModule</span>({
+                imports: [TaskHighlight]
+                }).<span style="color: #8b5cf6;">compileComponents</span>();
+
+                <span style="color: #6b7280;">// Création du composant</span>
+                fixture = TestBed.<span style="color: #8b5cf6;">createComponent</span>(TaskHighlight);
+                component = fixture.componentInstance;
+            });
+
+            <span style="color: #8b5cf6;">it</span>(<span style="color: #059669;">'devrait afficher le titre dans le DOM'</span>, () => {
+                <span style="color: #6b7280;">// ARRANGE : Définir le titre</span>
+                component.title = <span style="color: #059669;">'Ma tâche'</span>;
+                
+                <span style="color: #6b7280;">// ACT : Mettre à jour le template</span>
+                fixture.<span style="color: #8b5cf6;">detectChanges</span>(); <span style="color: #dc2626;">// ⚠️ IMPORTANT !</span>
+
+                <span style="color: #6b7280;">// ASSERT : Vérifier le DOM</span>
+                <span style="color: #0ea5e9;">const</span> compiled = fixture.nativeElement;
+                <span style="color: #8b5cf6;">expect</span>(compiled.<span style="color: #8b5cf6;">querySelector</span>(<span style="color: #059669;">'h2'</span>)?.textContent)
+                .<span style="color: #8b5cf6;">toContain</span>(<span style="color: #059669;">'Ma tâche'</span>);
+            });
+            });</pre>
+                </div>
+                
+                <div style="background: #fee2e2; border: 3px solid #ef4444; border-radius: 0.5rem; padding: 1.5rem; margin: 1.5rem 0;">
+                    <h3 style="color: #7f1d1d; font-size: 1.3rem; margin-bottom: 1rem;">⚠️ Point crucial à retenir</h3>
+                    <p style="font-size: 1.1rem; color: #991b1b;">
+                        Toujours appeler <code style="background: #fef2f2; color: #dc2626; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">fixture.detectChanges()</code> après avoir modifié une propriété du composant !
+                    </p>
+                    <p style="font-size: 1rem; color: #7f1d1d; margin-top: 0.5rem;">
+                        Sans cet appel, le template HTML ne sera jamais mis à jour et votre test échouera.
+                    </p>
+                </div>
+                
+                <div style="background: #dbeafe; border-left: 8px solid #3b82f6; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0;">
+                    <h3 style="color: #1e40af;">🔑 Les 3 étapes clés</h3>
+                    <div style="margin-top: 1rem; display: grid; gap: 0.75rem;">
+                        <div style="background: white; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #3b82f6;">
+                            <strong style="color: #1e40af;">1. Modifier</strong> → <code>component.title = 'Ma tâche'</code>
+                        </div>
+                        <div style="background: white; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #3b82f6;">
+                            <strong style="color: #1e40af;">2. Actualiser</strong> → <code>fixture.detectChanges()</code>
+                        </div>
+                        <div style="background: white; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #3b82f6;">
+                            <strong style="color: #1e40af;">3. Vérifier</strong> → <code>expect(...).toContain('Ma tâche')</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 25 -->
+            <div class="slide">
+                <h2>Décortiquer beforeEach avec TestBed</h2>
+                <div style="background: #fef3c7; border: 3px solid #f59e0b; border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 1.5rem;">
+                    <h3 style="color: #92400e;">📖 Analyse ligne par ligne</h3>
+                </div>
+                <div style="background: white; border: 2px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0;">
+                    <strong style="color: #7c3aed;">1. TestBed.configureTestingModule()</strong>
+                    <p>• Crée un mini-module de test Angular</p>
+                    <p>• Déclare le composant à tester</p>
+                </div>
+                <div style="background: white; border: 2px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0;">
+                    <strong style="color: #7c3aed;">2. .compileComponents()</strong>
+                    <p>• Angular compile le template et le CSS</p>
+                </div>
+                <div style="background: white; border: 2px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0;">
+                    <strong style="color: #7c3aed;">3. fixture = TestBed.createComponent()</strong>
+                    <p>• Crée une vraie instance du composant</p>
+                </div>
+                <div style="background: white; border: 2px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0;">
+                    <strong style="color: #7c3aed;">4. component = fixture.componentInstance</strong>
+                    <p>• Récupère la classe du composant</p>
+                </div>
+                <div style="background: white; border: 2px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0;">
+                    <strong style="color: #7c3aed;">5. fixture.detectChanges()</strong>
+                    <p>• Rend le template initial</p>
+                </div>
+            </div>
+
+            <!-- Slide 26 -->
+                  
+            <div class="slide">
+                <h2>Tester les @Input</h2>
+                
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                    <h3 style="color: white; font-size: 1.8rem; margin-bottom: 1rem;">🎯 Principe</h3>
+                    <ol style="margin-top: 1rem; font-size: 1.2rem; margin-left: 1.5rem;">
+                        <li>Modifier la propriété @Input du composant</li>
+                        <li>Appeler <code style="background: rgba(255,255,255,0.2); color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">fixture.detectChanges()</code></li>
+                        <li>Vérifier la propriété OU le DOM</li>
+                    </ol>
+                </div>
+                
+                <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 0.5rem; padding: 1.5rem; margin: 1.5rem 0;">
+                    <pre style="margin: 0; font-family: 'Courier New', monospace; font-size: 0.95rem; line-height: 1.8; color: #1e293b;"><span style="color: #8b5cf6;">it</span>(<span style="color: #059669;">'devrait recevoir un titre via @Input'</span>, () => {
+            <span style="color: #6b7280;">// 1. Définir la propriété @Input</span>
+            component.title = <span style="color: #059669;">'Titre reçu'</span>;
+
+            <span style="color: #6b7280;">// 2. Mettre à jour le template</span>
+            fixture.<span style="color: #8b5cf6;">detectChanges</span>();
+
+            <span style="color: #6b7280;">// 3. Vérifier</span>
+            <span style="color: #8b5cf6;">expect</span>(component.title).<span style="color: #8b5cf6;">toBe</span>(<span style="color: #059669;">'Titre reçu'</span>);
+            });</pre>
+                </div>
+                
+                <div style="background: #fee2e2; border: 3px solid #ef4444; border-radius: 0.5rem; padding: 1.5rem; margin: 1.5rem 0;">
+                    <h3 style="color: #7f1d1d; font-size: 1.3rem; margin-bottom: 1rem;">⚠️ Erreur n°1 des débutants</h3>
+                    <p style="font-size: 1.1rem; color: #991b1b;">
+                        Oublier <code style="background: #fef2f2; color: #dc2626; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">detectChanges()</code> = le template n'est jamais mis à jour !
+                    </p>
+                </div>
+                
+                <div style="background: #dbeafe; border-left: 8px solid #3b82f6; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0; margin-top: 1.5rem;">
+                    <h3 style="color: #1e40af;">💡 Astuce</h3>
+                    <p style="font-size: 1.1rem; color: #1e40af; margin-top: 0.5rem;">
+                        Vous pouvez aussi tester que le DOM affiche bien le titre en utilisant <code>fixture.nativeElement.querySelector('h2')</code>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 27 -->
+           
+            <div class="slide">
+                <h2>Tester les @Output</h2>
+                
+                <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 2rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                    <h3 style="color: white; font-size: 1.8rem; margin-bottom: 1rem;">🎯 Principe</h3>
+                    <ol style="margin-top: 1rem; font-size: 1.2rem; margin-left: 1.5rem;">
+                        <li>S'abonner à l'EventEmitter</li>
+                        <li>Capturer la valeur émise</li>
+                        <li>Déclencher l'événement</li>
+                        <li>Vérifier la valeur capturée</li>
+                    </ol>
+                </div>
+                
+                <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 0.5rem; padding: 1.5rem; margin: 1.5rem 0;">
+                    <pre style="margin: 0; font-family: 'Courier New', monospace; font-size: 0.95rem; line-height: 1.8; color: #1e293b;"><span style="color: #8b5cf6;">it</span>(<span style="color: #059669;">'devrait émettre un événement au clic'</span>, () => {
+            <span style="color: #6b7280;">// 1. Variable pour capturer la valeur</span>
+            <span style="color: #0ea5e9;">let</span> emittedValue: <span style="color: #0ea5e9;">string</span> | <span style="color: #0ea5e9;">undefined</span>;
+            
+            <span style="color: #6b7280;">// 2. S'abonner à l'EventEmitter</span>
+            component.taskClicked.<span style="color: #8b5cf6;">subscribe</span>((value: <span style="color: #0ea5e9;">string</span>) => {
+                emittedValue = value;
+            });
+            
+            <span style="color: #6b7280;">// 3. Déclencher l'événement</span>
+            component.onClick();
+            
+            <span style="color: #6b7280;">// 4. Vérifier la valeur capturée</span>
+            <span style="color: #8b5cf6;">expect</span>(emittedValue).<span style="color: #8b5cf6;">toBe</span>(<span style="color: #059669;">'task-clicked'</span>);
+            });</pre>
+                </div>
+                
+                <div class="alert alert-blue">
+                    <strong>💡 Astuce :</strong> Vous pouvez aussi utiliser <code>spyOn(component.taskClicked, 'emit')</code> pour vérifier l'émission
+                </div>
+            </div>
+
+            <!-- Slide 28 -->
+            <div class="slide">
+                <h2>Tester le DOM</h2>
+                
+                <div style="background: #fef3c7; border: 3px solid #f59e0b; border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 2rem;">
+                    <h3 style="color: #92400e;">🎯 Objectif</h3>
+                    <p style="font-size: 1.2rem; margin-top: 0.5rem;">
+                        Vérifier que le template affiche correctement les données
+                    </p>
+                </div>
+                
+                <div style="background: white; border: 2px solid #e5e7eb; border-radius: 0.5rem; padding: 2rem; margin: 2rem 0;">
+                    <h3>🔍 Méthodes utiles</h3>
+                    <ul style="margin-top: 1rem;">
+                        <li><code>fixture.nativeElement</code> → Accès au DOM réel</li>
+                        <li><code>querySelector()</code> → Sélectionner un élément</li>
+                        <li><code>querySelectorAll()</code> → Sélectionner plusieurs éléments</li>
+                        <li><code>textContent</code> → Récupérer le texte</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 0.5rem; padding: 1.5rem; margin: 1.5rem 0;">
+                    <pre style="margin: 0; font-family: 'Courier New', monospace; font-size: 0.95rem; line-height: 1.8; color: #1e293b;"><span style="color: #8b5cf6;">it</span>(<span style="color: #059669;">'devrait afficher le bon nombre de tâches'</span>, () => {
+            <span style="color: #6b7280;">// ARRANGE : Définir les tâches</span>
+            component.tasks = [
+                { id: <span style="color: #dc2626;">1</span>, title: <span style="color: #059669;">'Tâche 1'</span> },
+                { id: <span style="color: #dc2626;">2</span>, title: <span style="color: #059669;">'Tâche 2'</span> }
+            ];
+            
+            <span style="color: #6b7280;">// ACT : Mettre à jour le template</span>
+            fixture.<span style="color: #8b5cf6;">detectChanges</span>();
+            
+            <span style="color: #6b7280;">// ASSERT : Compter les éléments dans le DOM</span>
+            <span style="color: #0ea5e9;">const</span> items = fixture.nativeElement
+                .<span style="color: #8b5cf6;">querySelectorAll</span>(<span style="color: #059669;">'.task-item'</span>);
+            <span style="color: #8b5cf6;">expect</span>(items.length).<span style="color: #8b5cf6;">toBe</span>(<span style="color: #dc2626;">2</span>);
+            });</pre>
+                </div>
+                
+                <div style="background: #dcfce7; border-left: 8px solid #22c55e; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0;">
+                    <strong style="color: #15803d;">✅ Points clés :</strong>
+                    <ul style="margin-top: 0.5rem; color: #15803d;">
+                        <li>• Toujours appeler <code>detectChanges()</code> avant de tester le DOM</li>
+                        <li>• <code>querySelector()</code> retourne le premier élément trouvé</li>
+                        <li>• <code>querySelectorAll()</code> retourne tous les éléments (NodeList)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Slide 29 -->
+            <div class="slide">
+                <h2>fdescribe() et fit() - Focus sur un test</h2>
+                
+                <div style="background: #fee2e2; border: 3px solid #ef4444; border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 2rem;">
+                    <h3 style="color: #7f1d1d; font-size: 1.5rem; margin-bottom: 1rem;">⚠️ DANGER EN PRODUCTION !</h3>
+                    <p style="font-size: 1.2rem; color: #991b1b;">
+                        Utile pour debug, mais à retirer avant commit
+                    </p>
+                </div>
+                
+                <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 0.5rem; padding: 1.5rem; margin: 1.5rem 0;">
+                    <pre style="margin: 0; font-family: 'Courier New', monospace; font-size: 0.95rem; line-height: 1.8; color: #1e293b;"><span style="color: #6b7280;">// ❌ Seul CE bloc sera exécuté</span>
+            <span style="color: #8b5cf6;">fdescribe</span>(<span style="color: #059669;">'TaskService'</span>, () => {
+            <span style="color: #6b7280;">// ...</span>
+            });
+
+            <span style="color: #6b7280;">// ❌ Seul CE test sera exécuté</span>
+            <span style="color: #8b5cf6;">fit</span>(<span style="color: #059669;">'devrait ajouter une tâche'</span>, () => {
+            <span style="color: #6b7280;">// ...</span>
+            });</pre>
+                </div>
+                
+                <div style="background: #fef2f2; border-left: 8px solid #ef4444; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0; margin: 2rem 0;">
+                    <h3 style="color: #7f1d1d; margin-bottom: 1rem;">⚠️ Conséquences</h3>
+                    <ul style="margin-top: 1rem; font-size: 1.1rem; color: #7f1d1d;">
+                        <li>• Les autres tests ne seront PAS exécutés</li>
+                        <li>• <code>ng test</code> ne lancera pas tous les tests</li>
+                        <li>• CI/CD passera avec des tests manquants</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-green">
+                    <strong>✅ Règle :</strong> Toujours remettre <code>describe()</code> et <code>it()</code> avant de commit !
+                </div>
+                
+                <div style="background: #dbeafe; border-left: 8px solid #3b82f6; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0; margin-top: 1.5rem;">
+                    <h3 style="color: #1e40af;">💡 Usage légitime</h3>
+                    <p style="font-size: 1.1rem; color: #1e40af; margin-top: 0.5rem;">
+                        Utile pendant le développement pour exécuter rapidement un seul test et debugger plus vite
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 30 -->
+            <div class="slide">
+                <h2>Attention aux tests générés par le CLI</h2>
+                
+                <div style="background: #fef9c3; border: 3px solid #eab308; border-radius: 0.5rem; padding: 2rem; margin: 2rem 0;">
+                    <h3 style="color: #92400e;">⚠️ Problème courant</h3>
+                    <p style="font-size: 1.2rem; margin-top: 1rem;">
+                        Les tests auto-générés deviennent obsolètes dès que vous modifiez le template
+                    </p>
+                </div>
+                
+                <div style="background: #fee2e2; padding: 1.5rem; border-radius: 0.5rem; margin: 1rem 0;">
+                    <strong style="color: #7f1d1d; font-size: 1.2rem;">❌ Exemple de test obsolète :</strong>
+                    <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 0.5rem; padding: 1.5rem; margin-top: 1rem;">
+                        <pre style="margin: 0; font-family: 'Courier New', monospace; font-size: 0.9rem; line-height: 1.8; color: #1e293b;"><span style="color: #8b5cf6;">it</span>(<span style="color: #059669;">'should render title'</span>, () => {
+            <span style="color: #0ea5e9;">const</span> compiled = fixture.nativeElement;
+            <span style="color: #8b5cf6;">expect</span>(compiled.<span style="color: #8b5cf6;">querySelector</span>(<span style="color: #059669;">'.content span'</span>)?.textContent)
+                .<span style="color: #8b5cf6;">toContain</span>(<span style="color: #059669;">'Hello, world'</span>);
+            });</pre>
+                    </div>
+                    <p style="margin-top: 1rem; color: #7f1d1d;">
+                        → Ce test échoue si votre template ne contient plus <code>.content span</code>
+                    </p>
+                </div>
+                
+                <div class="alert alert-green">
+                    <strong>✅ Solutions :</strong>
+                    <ul style="margin-top: 0.5rem;">
+                        <li>• Adapter le test au template réel</li>
+                        <li>• Supprimer les tests non pertinents</li>
+                        <li>• Écrire vos propres tests significatifs</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #fef3c7; border-left: 8px solid #f59e0b; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0; margin-top: 1.5rem;">
+                    <strong style="color: #92400e;">💡 Conseil :</strong>
+                    <p style="margin-top: 0.5rem; font-size: 1.1rem; color: #78350f;">
+                        Ne gardez les tests CLI que s'ils testent vraiment votre logique métier. Sinon, supprimez-les et écrivez les vôtres.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 31 -->
+            <div class="slide">
+                <h2>Problème RouterTestingModule</h2>
+                
+                <div style="background: #fee2e2; border: 3px solid #ef4444; border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 2rem;">
+                    <h3 style="color: #7f1d1d; font-size: 1.3rem; margin-bottom: 1rem;">❌ Erreur courante</h3>
+                    <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 0.5rem; padding: 1rem; margin-top: 1rem;">
+                        <pre style="margin: 0; font-family: 'Courier New', monospace; font-size: 1rem; color: #dc2626;">NG0201: No provider for ActivatedRoute</pre>
+                    </div>
+                </div>
+                
+                <div style="background: #dbeafe; border-left: 8px solid #3b82f6; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0; margin: 2rem 0;">
+                    <h3 style="color: #1e40af; margin-bottom: 1rem;">🔍 Cause</h3>
+                    <p style="margin-top: 0.5rem; font-size: 1.1rem; color: #1e40af;">
+                        Votre composant utilise RouterLink, RouterOutlet ou ActivatedRoute, mais TestBed ne les fournit pas par défaut
+                    </p>
+                </div>
+                
+                <div style="background: #dcfce7; border-left: 8px solid #22c55e; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0;">
+                    <h3 style="color: #15803d; margin-bottom: 1rem;">✅ Solution</h3>
+                    <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 0.5rem; padding: 1.5rem; margin-top: 1rem;">
+                        <pre style="margin: 0; font-family: 'Courier New', monospace; font-size: 0.95rem; line-height: 1.8; color: #1e293b;"><span style="color: #0ea5e9;">import</span> { RouterTestingModule } <span style="color: #0ea5e9;">from</span> <span style="color: #059669;">'@angular/router/testing'</span>;
+
+            <span style="color: #0ea5e9;">await</span> TestBed.<span style="color: #8b5cf6;">configureTestingModule</span>({
+            imports: [TaskHighlight, <span style="color: #dc2626;">RouterTestingModule</span>]
+            }).<span style="color: #8b5cf6;">compileComponents</span>();</pre>
+                    </div>
+                </div>
+                
+                <div class="alert alert-yellow" style="margin-top: 2rem;">
+                    <strong>📝 Note :</strong> RouterTestingModule est marqué "déprécié" mais reste utilisable. La nouvelle API (provideRouter()) n'est pas encore stable partout.
+                </div>
+                
+                <div style="background: #fef3c7; border-left: 8px solid #f59e0b; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0; margin-top: 1.5rem;">
+                    <strong style="color: #92400e;">💡 Cas d'usage :</strong>
+                    <p style="margin-top: 0.5rem; font-size: 1.1rem; color: #78350f;">
+                        Vous aurez besoin de RouterTestingModule dès que votre composant contient un <code>&lt;a routerLink&gt;</code> ou utilise le Router
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 32 -->
+            <div class="slide">
+                <h2>Code Coverage</h2>
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                    <h3 style="color: white; font-size: 1.8rem;">📊 Qu'est-ce que c'est ?</h3>
+                    <p style="font-size: 1.2rem; margin-top: 1rem;">Le code coverage mesure quel pourcentage de votre code est couvert par les tests</p>
+                </div>
+                <div style="background: white; border: 3px solid #3b82f6; border-radius: 0.5rem; padding: 2rem; margin: 2rem 0;">
+                    <h3 style="color: #1e40af;">💻 Commande</h3>
+                    <div class="code-block">
+ng test --code-coverage
+                    </div>
+                    <h3 style="color: #1e40af; margin-top: 2rem;">📈 Résultat</h3>
+                    <p style="margin-top: 0.5rem;">Un rapport HTML dans <code>coverage/index.html</code> avec :</p>
+                    <ul style="margin-top: 1rem;">
+                        <li><strong>• Statements</strong> : lignes de code exécutées</li>
+                        <li><strong>• Branches</strong> : conditions if/else testées</li>
+                        <li><strong>• Functions</strong> : fonctions appelées</li>
+                        <li><strong>• Lines</strong> : lignes couvertes</li>
+                    </ul>
+                </div>
+                <div class="alert alert-blue">
+                    <strong>🎯 Objectif recommandé :</strong> Viser 70-80% de couverture
+                </div>
+                <div class="alert alert-yellow">
+                    <strong>⚠️ Attention :</strong> 100% de coverage ≠ 0 bug !
+                </div>
+            </div>
+            
+        </div>
+        
+       <div class="navigation">
+            <button id="prevBtn" onclick="changeSlide(-1)">← Précédent</button>
+            <div class="indicators" id="indicators"></div>
+            <button onclick="goHome()" style="background: #f59e0b; margin: 0 1rem;">🏠 Menu</button>
+            <button id="nextBtn" onclick="changeSlide(1)">Suivant →</button>
+        </div>
+    </div>
+    
+   
+    <script src="navigation.js"></script>
+    <script>
+        initNavigation(21); // Slides 21-32
+    </script>
+</body>
+</html>

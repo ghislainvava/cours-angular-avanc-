@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tests Unitaires Angular - Partie 4</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f3f4f6; height: 100vh; overflow: hidden; }
+        .presentation { display: flex; flex-direction: column; height: 100vh; }
+        .header { background: #1e3a8a; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .slide-container { flex: 1; padding: 2rem; overflow: hidden; }
+        .slide { background: white; height: 100%; padding: 3rem; border-radius: 0.5rem; box-shadow: 0 20px 50px rgba(0,0,0,0.3); overflow-y: auto; display: none; }
+        .slide.active { display: block; }
+        .navigation { background: #e5e7eb; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        button { padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        button:disabled { background: #d1d5db; color: #9ca3af; cursor: not-allowed; }
+        button:not(:disabled) { background: #2563eb; color: white; }
+        button:not(:disabled):hover { background: #1d4ed8; }
+        .indicators { display: flex; gap: 0.5rem; }
+        .indicator { width: 12px; height: 12px; border-radius: 50%; background: #9ca3af; cursor: pointer; transition: all 0.3s; }
+        .indicator.active { background: #2563eb; width: 32px; border-radius: 6px; }
+        h2 { font-size: 2.5rem; color: #1e3a8a; margin-bottom: 2rem; }
+        h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+        table { width: 100%; border-collapse: collapse; margin: 2rem 0; }
+        th { background: #1e3a8a; color: white; padding: 1rem; text-align: left; font-size: 1.1rem; }
+        td { padding: 1rem; border-bottom: 1px solid #e5e7eb; font-size: 1rem; }
+        tr:nth-child(even) { background: #f9fafb; }
+        .alert { padding: 1.5rem; border-left: 8px solid; margin: 1.5rem 0; border-radius: 0 0.5rem 0.5rem 0; }
+        .alert-green { background: #dcfce7; border-color: #22c55e; }
+        .alert-red { background: #fee2e2; border-color: #ef4444; }
+        .alert-blue { background: #dbeafe; border-color: #2563eb; }
+        ul { list-style: none; padding-left: 1.5rem; }
+        li { margin: 0.75rem 0; font-size: 1.1rem; }
+        code { background: #e5e7eb; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-family: 'Courier New', monospace; color: #1f2937; }
+        .summary-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 0.5rem; margin: 1.5rem 0; }
+        .key-points { background: #fef3c7; border: 3px solid #f59e0b; border-radius: 0.5rem; padding: 2rem; margin: 1.5rem 0; }
+        .resource-card { background: white; border: 2px solid #e5e7eb; border-radius: 0.5rem; padding: 1.5rem; margin: 1rem 0; transition: all 0.3s; }
+        .resource-card:hover { border-color: #3b82f6; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="header">
+            <strong>Tests Unitaires Angular - Partie 4 : Synthèse et Ressources</strong>
+            <div id="slideCounter">Slide 33 / 36</div>
+        </div>
+        
+        <div class="slide-container">
+            <!-- Slide 33 -->
+            <div class="slide active">
+                <h2>Erreurs courantes et solutions</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 35%;">Erreur</th>
+                            <th style="width: 30%;">Cause</th>
+                            <th style="width: 35%;">Solution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>No provider for...</code></td>
+                            <td>Service manquant dans TestBed</td>
+                            <td>Ajouter dans <code>providers: []</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>Can't bind to 'ngModel'</code></td>
+                            <td>FormsModule manquant</td>
+                            <td>Importer FormsModule</td>
+                        </tr>
+                        <tr>
+                            <td>Template non mis à jour</td>
+                            <td>Oubli de <code>detectChanges()</code></td>
+                            <td>Appeler après chaque modification</td>
+                        </tr>
+                        <tr>
+                            <td>Tests qui passent aléatoirement</td>
+                            <td>Données partagées entre tests</td>
+                            <td>Utiliser <code>beforeEach()</code> pour isoler</td>
+                        </tr>
+                        <tr>
+                            <td>Karma ne démarre pas</td>
+                            <td>Port déjà utilisé</td>
+                            <td>Changer le port dans karma.conf.js</td>
+                        </tr>
+                        <tr>
+                            <td><code>NullInjectorError</code></td>
+                            <td>Service non fourni au composant</td>
+                            <td>Ajouter le service dans providers</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="alert alert-blue">
+                    <strong>💡 Conseil :</strong> Lire attentivement les messages d'erreur de Karma. Ils indiquent souvent précisément le problème !
+                </div>
+            </div>
+            
+            <!-- Slide 34 -->
+            <div class="slide">
+                <h2>Bonnes pratiques</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+                    <div>
+                        <div class="alert alert-green">
+                            <h3 style="color: #15803d; margin-bottom: 1rem;">✅ À FAIRE</h3>
+                            <ul style="font-size: 1rem;">
+                                <li><strong>✓</strong> Tester le comportement, pas l'implémentation</li>
+                                <li><strong>✓</strong> Un test = une fonctionnalité</li>
+                                <li><strong>✓</strong> Noms de tests descriptifs et clairs</li>
+                                <li><strong>✓</strong> Utiliser <code>beforeEach()</code> pour la préparation</li>
+                                <li><strong>✓</strong> Tester les cas limites (null, vide, erreur)</li>
+                                <li><strong>✓</strong> Garder les tests simples et lisibles</li>
+                                <li><strong>✓</strong> Isoler chaque test</li>
+                                <li><strong>✓</strong> Viser 70-80% de coverage</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="alert alert-red">
+                            <h3 style="color: #7f1d1d; margin-bottom: 1rem;">❌ À ÉVITER</h3>
+                            <ul style="font-size: 1rem;">
+                                <li><strong>✗</strong> Tests qui dépendent les uns des autres</li>
+                                <li><strong>✗</strong> Tester des détails privés</li>
+                                <li><strong>✗</strong> Tests trop longs (>10 assertions)</li>
+                                <li><strong>✗</strong> Laisser des <code>fdescribe()</code> ou <code>fit()</code></li>
+                                <li><strong>✗</strong> Ignorer les tests qui échouent</li>
+                                <li><strong>✗</strong> Mocker sans raison valable</li>
+                                <li><strong>✗</strong> Tests qui testent le framework</li>
+                                <li><strong>✗</strong> Copier-coller les tests sans comprendre</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: #fef3c7; border-left: 8px solid #f59e0b; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0; margin-top: 2rem;">
+                    <strong style="color: #92400e; font-size: 1.2rem;">🎯 Règle d'or :</strong>
+                    <p style="margin-top: 0.5rem; font-size: 1.1rem;">Un bon test doit pouvoir être lu et compris par quelqu'un qui ne connaît pas le code</p>
+                </div>
+            </div>
+            
+            <!-- Slide 35 -->
+            <div class="slide">
+                <h2>Ce qu'il faut retenir</h2>
+                
+                <div class="summary-box">
+                    <h3 style="color: white; font-size: 1.8rem; margin-bottom: 1.5rem;">🎯 Concepts clés</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; font-size: 1.1rem;">
+                        <div>
+                            <p><strong>1. Jasmine</strong></p>
+                            <p style="opacity: 0.9;">Framework pour écrire les tests</p>
+                        </div>
+                        <div>
+                            <p><strong>2. Karma</strong></p>
+                            <p style="opacity: 0.9;">Runner pour exécuter les tests</p>
+                        </div>
+                        <div>
+                            <p><strong>3. TestBed</strong></p>
+                            <p style="opacity: 0.9;">Environnement Angular</p>
+                        </div>
+                        <div>
+                            <p><strong>4. AAA Pattern</strong></p>
+                            <p style="opacity: 0.9;">Arrange, Act, Assert</p>
+                        </div>
+                        <div>
+                            <p><strong>5. Fixture</strong></p>
+                            <p style="opacity: 0.9;">Enveloppe composant + DOM</p>
+                        </div>
+                        <div>
+                            <p><strong>6. detectChanges()</strong></p>
+                            <p style="opacity: 0.9;">Met à jour le template</p>
+                        </div>
+                        <div>
+                            <p><strong>7. Matchers</strong></p>
+                            <p style="opacity: 0.9;">Méthodes de vérification</p>
+                        </div>
+                        <div>
+                            <p><strong>8. Mocks & Spies</strong></p>
+                            <p style="opacity: 0.9;">Simuler et observer</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="key-points">
+                    <h3 style="color: #92400e;">🛠️ Commandes essentielles</h3>
+                    <ul style="margin-top: 1rem; font-size: 1.1rem;">
+                        <li><code>ng test</code> → Lancer les tests</li>
+                        <li><code>ng test --code-coverage</code> → Avec rapport de couverture</li>
+                        <li><code>ng test --include='**/*.spec.ts'</code> → Tests spécifiques</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #dbeafe; border: 3px solid #3b82f6; border-radius: 0.5rem; padding: 2rem; margin-top: 1.5rem;">
+                    <h3 style="color: #1e40af;">📊 Objectifs qualité</h3>
+                    <ul style="margin-top: 1rem; font-size: 1.1rem;">
+                        <li><strong>•</strong> 70-80% de code coverage minimum</li>
+                        <li><strong>•</strong> Tests rapides (< 100ms par test)</li>
+                        <li><strong>•</strong> Suite complète en moins de 30 secondes</li>
+                        <li><strong>•</strong> Zéro test ignoré ou en attente</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Slide 36 -->
+            <div class="slide">
+                <h2>Ressources et documentation</h2>
+                
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                    <h3 style="color: white; font-size: 1.8rem;">📚 Documentation officielle</h3>
+                </div>
+                
+                <div class="resource-card">
+                    <h3 style="color: #1e40af;">🅰️ Angular Testing Guide</h3>
+                    <p style="margin: 0.5rem 0; color: #6b7280;">Guide complet sur les tests dans Angular</p>
+                    <p style="font-family: monospace; color: #3b82f6;">https://angular.io/guide/testing</p>
+                </div>
+                
+                <div class="resource-card">
+                    <h3 style="color: #7c3aed;">🧪 Jasmine Documentation</h3>
+                    <p style="margin: 0.5rem 0; color: #6b7280;">Syntaxe et matchers Jasmine</p>
+                    <p style="font-family: monospace; color: #3b82f6;">https://jasmine.github.io/</p>
+                </div>
+                
+                <div class="resource-card">
+                    <h3 style="color: #dc2626;">🚀 Karma Configuration</h3>
+                    <p style="margin: 0.5rem 0; color: #6b7280;">Configuration du test runner</p>
+                    <p style="font-family: monospace; color: #3b82f6;">https://karma-runner.github.io/</p>
+                </div>
+                
+                <div style="background: #fef3c7; border-left: 8px solid #f59e0b; padding: 1.5rem; border-radius: 0 0.5rem 0.5rem 0; margin: 2rem 0;">
+                    <h3 style="color: #92400e;">🎓 Pour aller plus loin</h3>
+                    <ul style="margin-top: 1rem;">
+                        <li><strong>•</strong> Testing Library Angular : https://testing-library.com/angular</li>
+                        <li><strong>•</strong> Jest (alternative à Jasmine) : https://jestjs.io/</li>
+                        <li><strong>•</strong> Cypress pour E2E : https://www.cypress.io/</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #dcfce7; border: 3px solid #22c55e; border-radius: 0.5rem; padding: 2rem; margin-top: 2rem;">
+                    <h3 style="color: #15803d;">💪 Exercices pratiques suggérés</h3>
+                    <ol style="margin-top: 1rem; font-size: 1.1rem;">
+                        <li><strong>1.</strong> Implémenter une suite de tests complète pour TaskBoard Pro</li>
+                        <li><strong>2.</strong> Challenge : Atteindre 80% de code coverage</li>
+                        <li><strong>3.</strong> Créer des tests pour un nouveau composant from scratch</li>
+                        <li><strong>4.</strong> Tester un service avec dépendances HTTP</li>
+                    </ol>
+                </div>
+                
+                <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 0.5rem; color: white;">
+                    <h2 style="color: white; margin-bottom: 1rem;">🎉 Fin de la formation !</h2>
+                    <p style="font-size: 1.3rem;">Merci pour votre attention</p>
+                    <p style="font-size: 1.1rem; margin-top: 0.5rem; opacity: 0.9;">Bonne chance pour vos tests Angular ! 🚀</p>
+                </div>
+            </div>
+            
+        </div>
+        
+       <div class="navigation">
+            <button id="prevBtn" onclick="changeSlide(-1)">← Précédent</button>
+            <div class="indicators" id="indicators"></div>
+            <button onclick="goHome()" style="background: #f59e0b; margin: 0 1rem;">🏠 Menu</button>
+            <button id="nextBtn" onclick="changeSlide(1)">Suivant →</button>
+        </div>
+    </div>
+    
+
+    <script src="navigation.js"></script>
+    <script>
+        initNavigation(33); // Slides 33-36
+    </script>
+</body>
+</html>
