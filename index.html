@@ -73,11 +73,32 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
+            position: relative;
         }
 
         .sequence-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .sequence-card.locked {
+            opacity: 0.7;
+        }
+
+        .sequence-card.locked::after {
+            content: "🔒";
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
+        }
+
+        .sequence-card.unlocked::after {
+            content: "✅";
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
         }
 
         .sequence-card h2 {
@@ -161,6 +182,132 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
+        .view-button.locked {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .modal-content p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .modal-content input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-cancel {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: -15px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
         @media (max-width: 768px) {
             header h1 {
                 font-size: 2.5em;
@@ -186,40 +333,253 @@
         </header>
 
         <div class="sequences-grid">
+            <!-- Séquence 1 -->
+            <div class="sequence-card" data-sequence="1" data-code="ANG2025-S1" data-url="sequence1/sequence1.html">
+                <h2>
+                    <span class="sequence-number">1</span>
+                    Séquence 1
+                </h2>
+                <p>Angular Avancé - Introduction</p>
+                <div class="parts-count">📚 27 slides</div>
+                <ul class="topics-list">
+                    <li>Qu'est-ce qu'un SPA</li>
+                    <li>TypeScript vs JavaScript</li>
+                    <li>Structure d'un projet Angular</li>
+                    <li>Routing de base</li>
+                </ul>
+                <button class="view-button">Voir la séquence 1</button>
+            </div>
+
+            <!-- Séquence 2 -->
+            <div class="sequence-card" data-sequence="2" data-code="ANG2025-S2" data-url="sequence2/sequence2.html">
+                <h2>
+                    <span class="sequence-number">2</span>
+                    Séquence 2
+                </h2>
+                <p>Programmation Réactive avec RxJS</p>
+                <div class="parts-count">📚 20 slides</div>
+                <ul class="topics-list">
+                    <li>Programmation réactive</li>
+                    <li>RxJS et Observables</li>
+                    <li>BehaviorSubject</li>
+                    <li>Pipe async</li>
+                </ul>
+                <button class="view-button">Voir la séquence 2</button>
+            </div>
+
             <!-- Séquence 3 -->
-            <div class="sequence-card">
+            <div class="sequence-card" data-sequence="3" data-code="ANG2025-S3" data-url="sequence3/sequence3.html">
                 <h2>
                     <span class="sequence-number">3</span>
                     Séquence 3
                 </h2>
                 <p>Architecture modulaire & Lazy Loading</p>
-                <div class="parts-count">📚 1 présentation complète (30 slides)</div>
+                <div class="parts-count">📚 30 slides</div>
                 <ul class="topics-list">
                     <li>Modularisation Angular</li>
                     <li>Lazy Loading avec loadChildren()</li>
                     <li>Composants dynamiques</li>
                     <li>Opérateurs RxJS</li>
                 </ul>
-                <a href="sequence3/sequence3.html" class="view-button">Voir la séquence 3</a>
+                <button class="view-button">Voir la séquence 3</button>
             </div>
 
             <!-- Séquence 4 -->
-            <div class="sequence-card">
+            <div class="sequence-card" data-sequence="4" data-code="ANG2025-S4" data-url="sequence4/sequence4.html">
                 <h2>
                     <span class="sequence-number">4</span>
                     Séquence 4
                 </h2>
-                <p>Concepts avancés Angular</p>
-                <div class="parts-count">📚 4 parties</div>
+                <p>Tests Unitaires avec Jasmine & Karma</p>
+                <div class="parts-count">📚 30 slides</div>
                 <ul class="topics-list">
-                    <li>Partie 1: Introduction</li>
-                    <li>Partie 2: Services & Injection</li>
-                    <li>Partie 3: Routing avancé</li>
-                    <li>Partie 4: Optimisation</li>
+                    <li>Tests unitaires Angular</li>
+                    <li>TestBed et configuration</li>
+                    <li>Mocking des services</li>
+                    <li>Code coverage</li>
                 </ul>
-                <a href="sequence4/index.html" class="view-button">Voir la séquence 4</a>
+                <button class="view-button">Voir la séquence 4</button>
+            </div>
+
+            <!-- Séquence 5 -->
+            <div class="sequence-card" data-sequence="5" data-code="ANG2025-S5" data-url="sequence5/sequence5.html">
+                <h2>
+                    <span class="sequence-number">5</span>
+                    Séquence 5
+                </h2>
+                <p>Performance & Sécurité dans Angular</p>
+                <div class="parts-count">📚 21 slides</div>
+                <ul class="topics-list">
+                    <li>Audit de performance (DevTools, Lighthouse)</li>
+                    <li>OnPush change detection</li>
+                    <li>Lazy Loading et optimisations</li>
+                    <li>Sécurité : XSS, CSRF, CSP</li>
+                </ul>
+                <button class="view-button">Voir la séquence 5</button>
+            </div>
+
+            <!-- Séquence 6 -->
+            <div class="sequence-card" data-sequence="6" data-code="ANG2025-S6" data-url="#">
+                <h2>
+                    <span class="sequence-number">6</span>
+                    Séquence 6
+                </h2>
+                <p>Déploiement et Production</p>
+                <div class="parts-count">📚 À venir</div>
+                <ul class="topics-list">
+                    <li>Build de production</li>
+                    <li>Variables d'environnement</li>
+                    <li>CI/CD avec GitHub Actions</li>
+                    <li>Déploiement (Netlify, Vercel, Firebase)</li>
+                </ul>
+                <button class="view-button">Bientôt disponible</button>
             </div>
         </div>
     </div>
+
+    <!-- Modal pour le code -->
+    <div id="codeModal" class="modal">
+        <div class="modal-content">
+            <h2>🔒 Séquence verrouillée</h2>
+            <p>Entrez le code pour accéder à cette séquence</p>
+            <input type="text" id="codeInput" placeholder="CODE-ACCES" maxlength="20">
+            <div class="error-message" id="errorMessage">❌ Code incorrect</div>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+                <button class="btn-submit" onclick="validateCode()">Valider</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Codes d'accès pour chaque séquence (CHANGEZ-LES !)
+    const SEQUENCE_CODES = {
+        1: 'ANG2026-S1',
+        2: 'ANG2026-S2',
+        3: 'SEQUENCE3',
+        4: 'SEQUENCE4',
+        5: 'FINAL-S5',
+        6: 'FINAL-S6'
+    };
+
+    let currentSequence = null;
+
+    // Charger l'état des séquences débloquées
+    function loadUnlockedSequences() {
+        const unlocked = JSON.parse(localStorage.getItem('unlockedSequences') || '[]');
+        
+        // Débloquer automatiquement les séquences 1 et 2
+        if (!unlocked.includes(1)) unlocked.push(1);
+        if (!unlocked.includes(2)) unlocked.push(2);
+        
+        // Sauvegarder pour la prochaine visite
+        localStorage.setItem('unlockedSequences', JSON.stringify(unlocked));
+        
+        return unlocked;
+    }
+
+    // Sauvegarder une séquence débloquée (FONCTION MANQUANTE)
+    function unlockSequence(sequenceNum) {
+        const unlocked = loadUnlockedSequences();
+        if (!unlocked.includes(sequenceNum)) {
+            unlocked.push(sequenceNum);
+            localStorage.setItem('unlockedSequences', JSON.stringify(unlocked));
+        }
+    }
+
+    // Vérifier si une séquence est débloquée
+    function isUnlocked(sequenceNum) {
+        return loadUnlockedSequences().includes(sequenceNum);
+    }
+
+    // Initialiser l'affichage des cartes
+    function initializeCards() {
+        const cards = document.querySelectorAll('.sequence-card');
+        cards.forEach(card => {
+            const sequenceNum = parseInt(card.dataset.sequence);
+            const button = card.querySelector('.view-button');
+            
+            if (isUnlocked(sequenceNum)) {
+                card.classList.add('unlocked');
+                card.classList.remove('locked');
+                button.classList.remove('locked');
+                button.onclick = () => {
+                    window.location.href = card.dataset.url;
+                };
+            } else {
+                card.classList.add('locked');
+                card.classList.remove('unlocked');
+                button.classList.add('locked');
+                button.onclick = (e) => {
+                    e.preventDefault();
+                    openModal(sequenceNum);
+                };
+            }
+        });
+    }
+
+    // Ouvrir le modal
+    function openModal(sequenceNum) {
+        currentSequence = sequenceNum;
+        const modal = document.getElementById('codeModal');
+        const input = document.getElementById('codeInput');
+        const error = document.getElementById('errorMessage');
+        
+        modal.classList.add('show');
+        input.value = '';
+        input.focus();
+        error.classList.remove('show');
+    }
+
+    // Fermer le modal
+    function closeModal() {
+        const modal = document.getElementById('codeModal');
+        modal.classList.remove('show');
+        currentSequence = null;
+    }
+
+    // Valider le code
+    function validateCode() {
+        const input = document.getElementById('codeInput');
+        const error = document.getElementById('errorMessage');
+        const enteredCode = input.value.trim().toUpperCase();
+        const correctCode = SEQUENCE_CODES[currentSequence];
+
+        if (enteredCode === correctCode) {
+            unlockSequence(currentSequence);
+            closeModal();
+            initializeCards();
+            
+            // Rediriger vers la séquence
+            const card = document.querySelector(`[data-sequence="${currentSequence}"]`);
+            setTimeout(() => {
+                window.location.href = card.dataset.url;
+            }, 300);
+        } else {
+            error.classList.add('show');
+            input.value = '';
+            input.focus();
+        }
+    }
+
+    // Permettre validation avec Entrée
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeCards();
+        
+        const input = document.getElementById('codeInput');
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                validateCode();
+            }
+        });
+
+        // Fermer modal avec Echap
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    });
+</script>
 </body>
 </html>

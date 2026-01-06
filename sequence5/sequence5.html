@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Séquence 5 - Performance & Sécurité Angular</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .presentation-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide-counter {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            padding: 15px;
+            font-weight: bold;
+        }
+
+        .slide {
+            display: none;
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 60px;
+            animation: slideIn 0.5s ease-out;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.8em;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            color: #764ba2;
+            font-size: 2em;
+            margin: 25px 0 15px 0;
+        }
+
+        h3 {
+            color: #555;
+            font-size: 1.5em;
+            margin: 20px 0 10px 0;
+        }
+
+        h4 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin: 15px 0 10px 0;
+        }
+
+        p, li {
+            font-size: 1.2em;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 20px;
+            border-left: 5px solid #ffc107;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+            font-size: 0.95em;
+        }
+
+       pre {
+            background: #f4f4f4;
+            color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            line-height: 1.5;
+            border: 1px solid #ddd;
+        }
+
+        pre code {
+            background: transparent;
+            color: #333;        /* ← Changé de #f8f8f2 à #333 */
+            padding: 0;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .controls button {
+            background: white;
+            color: #667eea;
+            border: 2px solid white;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .controls button:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .date-badge {
+            display: inline-block;
+            background: #764ba2;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        .emoji {
+            font-size: 1.3em;
+            margin-right: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-item {
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .comparison-before {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+
+        .comparison-after {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        strong {
+            color: #667eea;
+        }
+
+        .score-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin: 0 5px;
+        }
+
+        .score-excellent {
+            background: #d4edda;
+            color: #28a745;
+        }
+
+        .score-good {
+            background: #fff3cd;
+            color: #ffc107;
+        }
+
+        .score-poor {
+            background: #f8d7da;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">20</span>
+        </div>
+
+        <!-- Slide 1 -->
+        <div class="slide active">
+            <h1>📊 Séquence 5</h1>
+            <h2>Performance & Sécurité dans Angular</h2>
+            <div class="date-badge">⏱️ Durée : 3h - 3h30</div>
+            
+            <div class="success-box">
+                <h3>🎯 Objectifs de la séance</h3>
+                <p>À la fin de cette séance, vous serez capables de :</p>
+                <ul>
+                    <li><strong>Identifier</strong> les problèmes de performance dans une application Angular</li>
+                    <li><strong>Utiliser</strong> Angular DevTools et Lighthouse pour auditer une app</li>
+                    <li><strong>Mettre en œuvre</strong> des optimisations concrètes</li>
+                    <li><strong>Comprendre</strong> et appliquer les bonnes pratiques de sécurité front-end</li>
+                    <li><strong>Prévenir</strong> les principales attaques : XSS, CSRF, injections</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide">
+            <h1>⚡ Qu'est-ce qu'un problème de performance ?</h1>
+            
+            <div class="warning-box">
+                <h3><span class="emoji">🐌</span> Symptômes d'une application lente</h3>
+                <ul>
+                    <li><strong>Temps de chargement</strong> : L'application met trop de temps à démarrer</li>
+                    <li><strong>Rendu lent</strong> : Les interactions utilisateur sont ralenties</li>
+                    <li><strong>Change Detection excessive</strong> : Angular re-vérifie trop souvent</li>
+                    <li><strong>DOM surchargé</strong> : Trop d'éléments HTML à gérer</li>
+                    <li><strong>Bundles lourds</strong> : Fichiers JavaScript trop volumineux</li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <h3>💡 Exemples concrets dans TaskBoard Pro</h3>
+                <ul>
+                    <li>Liste de 1000 tâches qui rame</li>
+                    <li>Clic sur "Ajouter" qui prend 2 secondes</li>
+                    <li>Toute la page se rafraîchit quand on modifie UNE seule tâche</li>
+                    <li>Application de 5 Mo à télécharger au démarrage</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <p><strong>Règle d'or :</strong> Une application performante = une meilleure expérience utilisateur = plus de conversions !</p>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide">
+            <h1>🔍 Les causes fréquentes en Angular</h1>
+            
+            <div class="comparison">
+                <div class="comparison-before">
+                    <h3>❌ Problème 1 : Change Detection par défaut</h3>
+                    <p>Angular vérifie TOUS les composants à CHAQUE événement</p>
+                    <pre><code>@Component({
+  selector: 'app-tasks',
+  // Pas de stratégie = Default (lent)
+})</code></pre>
+                    <p><strong>Impact :</strong> 100 composants vérifiés à chaque clic !</p>
+                </div>
+
+                <div class="comparison-after">
+                    <h3>✅ Solution : OnPush</h3>
+                    <p>Angular vérifie uniquement si les @Input changent</p>
+                    <pre><code>@Component({
+  selector: 'app-task-item',
+  changeDetection: ChangeDetectionStrategy.OnPush
+})</code></pre>
+                    <p><strong>Gain :</strong> 99% de vérifications en moins !</p>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3>❌ Problème 2 : ngFor sans trackBy</h3>
+                <pre><code>@for (task of tasks; track task) {  // ❌ Sans ID
+  &lt;li&gt;{{ task.title }}&lt;/li&gt;
+}
+// Angular recrée TOUS les &lt;li&gt; à chaque changement</code></pre>
+            </div>
+
+            <div class="success-box">
+                <h3>✅ Solution : track par ID</h3>
+                <pre><code>@for (task of tasks; track task.id) {  // ✅ Avec ID
+  &lt;li&gt;{{ task.title }}&lt;/li&gt;
+}
+// Angular ne recrée que ce qui a changé</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide">
+            <h1>🔎 Audit de performance</h1>
+            
+            <div class="highlight" style="text-align: center; padding: 40px;">
+                <h2 style="font-size: 2.5em; color: #667eea; margin-bottom: 20px;">
+                    "On n'optimise pas sans mesurer !"
+                </h2>
+                <p style="font-size: 1.3em;">Il faut d'abord <strong>identifier les vrais problèmes</strong> avant d'optimiser.</p>
+            </div>
+
+            <div class="info-box">
+                <h3>📊 Deux outils essentiels</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Outil</th>
+                            <th>Usage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Angular DevTools</strong></td>
+                            <td>Problèmes spécifiques Angular (change detection, composants)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Lighthouse</strong></td>
+                            <td>Performance globale (chargement, bundle, images)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="success-box">
+                <p><strong>Méthodologie :</strong></p>
+                <ol>
+                    <li>Mesurer l'état actuel</li>
+                    <li>Identifier les goulots d'étranglement</li>
+                    <li>Optimiser de manière ciblée</li>
+                    <li>Mesurer à nouveau</li>
+                    <li>Répéter jusqu'à satisfaction</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide">
+            <h1>🛠️ Angular DevTools</h1>
+            
+            <div class="info-box">
+                <h3>📥 Installation</h3>
+                <ol>
+                    <li>Ouvrir Chrome Web Store</li>
+                    <li>Rechercher "Angular DevTools"</li>
+                    <li>Cliquer sur "Ajouter à Chrome"</li>
+                    <li>Ouvrir DevTools: F12(Windows) ou Cmd + Option + I (Mac)→ Onglet "Angular"</li>
+                </ol>
+            </div>
+
+            <div class="success-box">
+                <h3>✨ Fonctionnalités principales</h3>
+                <ul>
+                    <li><strong>Profiler</strong> : Enregistre et analyse les cycles de change detection</li>
+                    <li><strong>Components</strong> : Inspecte l'arbre des composants</li>
+                    <li><strong>Injector Tree</strong> : Visualise les dépendances</li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <h3>🎯 Cas pratique : Détecter un re-render inutile</h3>
+                <ol>
+                    <li>Ouvrir Angular DevTools → Profiler</li>
+                    <li>Cliquer sur "Record" ⏺️</li>
+                    <li>Faire une action (clic sur "Ajouter tâche")</li>
+                    <li>Cliquer sur "Stop" ⏹️</li>
+                    <li>Observer : combien de composants se sont rafraîchis ?</li>
+                </ol>
+                <p><strong>Question :</strong> Est-ce que TOUS les composants devaient se rafraîchir ?</p>
+            </div>
+        </div>
+
+        <!-- Slide 6 -->
+        <div class="slide">
+            <h1>💡 Lighthouse (Chrome DevTools)</h1>
+            
+            <div class="info-box">
+                <h3>🚀 Lancer un audit Lighthouse</h3>
+                <ol>
+                    <li>Ouvrir Chrome DevTools (F12/ Cmd + option + i)</li>
+                    <li>Onglet "Lighthouse"</li>
+                    <li>Cocher "Performance"</li>
+                    <li>Cliquer sur "Analyze page load"</li>
+                </ol>
+            </div>
+
+            <div class="success-box">
+                <h3>📊 Lire les scores</h3>
+                <ul>
+                    <li><span class="score-badge score-excellent">90-100</span> : Excellent ✅</li>
+                    <li><span class="score-badge score-good">50-89</span> : À améliorer ⚠️</li>
+                    <li><span class="score-badge score-poor">0-49</span> : Problèmes critiques ❌</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <h3>🔍 Métriques importantes</h3>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td><strong>FCP</strong> (First Contentful Paint)</td>
+                            <td>Temps avant le premier affichage</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LCP</strong> (Largest Contentful Paint)</td>
+                            <td>Temps avant l'élément principal</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TBT</strong> (Total Blocking Time)</td>
+                            <td>Temps où la page est bloquée</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CLS</strong> (Cumulative Layout Shift)</td>
+                            <td>Stabilité visuelle</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="warning-box">
+                <p><strong>⚠️ Attention :</strong> Lighthouse ≠ vérité absolue. Toujours croiser avec Angular DevTools !</p>
+            </div>
+        </div>
+
+        <!-- Slide 7 -->
+        <div class="slide">
+            <h1>📈 Exemple de rapport Lighthouse</h1>
+            
+            <div class="comparison">
+                <div class="comparison-before">
+                    <h3>❌ Avant optimisation</h3>
+                    <p><strong>Performance :</strong> <span class="score-badge score-poor">45/100</span></p>
+                    <ul>
+                        <li>FCP : 3.2s</li>
+                        <li>LCP : 5.8s</li>
+                        <li>Bundle size : 2.8 MB</li>
+                    </ul>
+                    <p><strong>Problèmes identifiés :</strong></p>
+                    <ul>
+                        <li>🔴 JavaScript bloquant : 1.2s</li>
+                        <li>🔴 Pas de lazy loading</li>
+                        <li>🔴 Images non optimisées</li>
+                    </ul>
+                </div>
+
+                <div class="comparison-after">
+                    <h3>✅ Après optimisation</h3>
+                    <p><strong>Performance :</strong> <span class="score-badge score-excellent">92/100</span></p>
+                    <ul>
+                        <li>FCP : 1.1s</li>
+                        <li>LCP : 2.3s</li>
+                        <li>Bundle size : 850 KB</li>
+                    </ul>
+                    <p><strong>Améliorations appliquées :</strong></p>
+                    <ul>
+                        <li>✅ Lazy loading des modules</li>
+                        <li>✅ OnPush change detection</li>
+                        <li>✅ Images optimisées (WebP)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>🎯 Gain de performance</h3>
+                <p style="font-size: 1.5em; text-align: center;">
+                    <strong>+47 points</strong> de score<br>
+                    <strong>-70%</strong> de bundle size<br>
+                    <strong>3x</strong> plus rapide !
+                </p>
+            </div>
+        </div>
+
+ <!-- Slide 8 -->
+        <div class="slide">
+            <h1>🎯 Optimisation 1 : OnPush</h1><div class="info-box">
+  <h3>🤔 À quoi sert OnPush ?</h3>
+  <p>
+    Par défaut, Angular relance la détection de changements
+    <strong>sur tous les composants</strong> à chaque événement
+    (clic, timer, requête HTTP…).
+  </p>
+  <p>
+    <strong>OnPush</strong> permet de limiter ce travail en disant à Angular :
+    <em>« ne vérifie ce composant que s’il a une bonne raison »</em>.
+  </p>
+  <p>
+    Résultat :
+    <strong>moins de calculs</strong>, moins de re-render,
+    et une application plus fluide.
+  </p>
+</div>
+
+    
+            
+            <div class="comparison">
+                <div class="comparison-before">
+                    <h3>❌ Par défaut (lent)</h3>
+                    <p>Angular vérifie TOUS les composants à CHAQUE événement</p>
+                    <pre><code>import { Component, Input } from '@angular/core';
+
+@Component({
+  selector: 'app-task-highlight',
+  template: `
+    &lt;div class="task-highlight"&gt;
+      &lt;h3&gt;Tâche mise en avant&lt;/h3&gt;
+      &lt;h2&gt;{{ title }}&lt;/h2&gt;
+    &lt;/div&gt;
+  `
+})
+export class TaskHighlight {
+  @Input() title = '';
+}
+
+// Vérifié à CHAQUE événement de l'app !</code></pre>
+                </div>
+
+                <div class="comparison-after">
+                    <h3>✅ Avec OnPush (rapide)</h3>
+                    <p>Angular vérifie uniquement si le @Input a changé</p>
+                    <pre><code>import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+
+@Component({
+  selector: 'app-task-highlight',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    &lt;div class="task-highlight"&gt;
+      &lt;h3&gt;Tâche mise en avant&lt;/h3&gt;
+      &lt;h2&gt;{{ title }}&lt;/h2&gt;
+    &lt;/div&gt;
+  `
+})
+export class TaskHighlight {
+  @Input() title = '';
+}
+
+// Vérifié SEULEMENT si title change !</code></pre>
+                </div>
+            </div>
+
+            <div class="success-box">
+                <h3>📊 Gain de performance</h3>
+                <p style="font-size: 1.3em; text-align: center;">
+                    <strong>99%</strong> de vérifications en moins ! 🚀
+                </p>
+            </div>
+        </div>
+
+
+<!-- Slide 9 - Quand utiliser OnPush -->
+        <div class="slide">
+            <h1>🤔 Quand utiliser OnPush dans TaskBoard Pro ?</h1>
+            
+            <div class="warning-box">
+                <h3>⚠️ Ce qu'OnPush n'est PAS</h3>
+                <p>
+                    <strong>OnPush n'interdit pas l'état interne</strong> et ne bloque pas les mises à jour.<br>
+                    Il modifie uniquement <strong>quand Angular relance la détection</strong> pour ce composant.
+                </p>
+            </div>
+
+            <div class="success-box">
+                <h3>✅ Dans TaskBoard Pro, mettre OnPush sur :</h3>
+                
+                <h4>1️⃣ TaskHighlight </h4>
+                <pre><code>@Component({
+  selector: 'app-task-highlight',
+  changeDetection: ChangeDetectionStrategy.OnPush, // ✅
+})
+export class TaskHighlight {
+  @Input() title = '';  // Ne dépend QUE de cet @Input
+}</code></pre>
+                <p><strong>Pourquoi ?</strong> Composant pur de présentation, pas d'état interne</p>
+
+                <h4>2️⃣ TasksPage</h4>
+                <pre><code>@Component({
+  selector: 'app-tasks-page',
+  changeDetection: ChangeDetectionStrategy.OnPush, // ✅
+})
+export class TasksPage {
+  tasks$ = this.taskService.tasks$; // Observable avec | async
+  
+  addTask(title: string): void {
+    this.taskService.addTask(title); // Événement déclenche détection
+  }
+}</code></pre>
+                <p><strong>Pourquoi ?</strong> Utilise des Observables + les clics déclenchent automatiquement la détection</p>
+
+                <h4>3️⃣ TaskEditComponent (à ajouter)</h4>
+                <pre><code>@Component({
+  selector: 'app-task-edit',
+  changeDetection: ChangeDetectionStrategy.OnPush, // ← À AJOUTER
+})
+export class TaskEditComponent {
+  @Input() title = '';
+  @Input() taskId = 0;
+  @Output() onSave = new EventEmitter&lt;{id: number, title: string}&gt;();
+  
+  save(newTitle: string) {
+    this.onSave.emit({ id: this.taskId, title: newTitle });
+  }
+}</code></pre>
+                <p><strong>Pourquoi ?</strong> Pattern @Input/@Output pur, pas de modification interne</p>
+            </div>
+
+       
+
+            <div class="info-box">
+                <h3>🔑 Angular re-vérifie un composant OnPush quand :</h3>
+                <ul>
+                    <li><strong>Un @Input change de référence</strong>
+                        <pre><code>// Dans TaskService
+this.tasksSubject.next([...currentTasks, newTask]); // ✅ Nouvelle référence</code></pre>
+                    </li>
+                    <li><strong>Un événement vient du composant</strong>
+                        <pre><code>// Dans TasksPage
+&lt;button (click)="addTask(title)"&gt; // ✅ Clic déclenche détection</code></pre>
+                    </li>
+                    <li><strong>Un Observable émet via | async</strong>
+                        <pre><code>// Dans le template
+@if (tasks$ | async; as tasks) { ... } // ✅ Auto-détection</code></pre>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <h3>🎯 Règle d'or pour TaskBoard Pro</h3>
+                <p style="font-size: 1.3em; text-align: center;">
+                    <strong>OnPush marche parfaitement si le composant :<br>
+                    • Reçoit des données via @Input / Observable<br>
+                    • Émet des événements via @Output / clics<br>
+                    • Ne manipule PAS le DOM dynamiquement (ViewContainerRef)</strong>
+                </p>
+            </div>
+        </div>
+
+
+   <!-- Slide 10 -->
+<div class="slide">
+  <h1>🎯 Optimisation 2 : trackBy</h1>
+
+  <div class="info-box">
+  <h3>🤔 À quoi sert trackBy ?</h3>
+  <p>
+    Quand Angular affiche une liste, il doit décider
+    <strong>quel élément correspond à quel item de données</strong>.
+  </p>
+  <p>
+    <strong>Sans trackBy</strong>, Angular compare les éléments par leur position
+    et peut recréer inutilement le DOM.
+  </p>
+  <p>
+    <strong>Avec trackBy</strong>, Angular utilise une <em>clé stable</em> (ex : <code>id</code>)
+    pour mettre à jour uniquement les éléments qui ont réellement changé.
+  </p>
+</div>
+
+  <div class="comparison">
+    <div class="comparison-before">
+      <h3>❌ Sans trackBy (lent)</h3>
+      <p>Angular ne sait pas identifier les éléments → recréation inutile du DOM</p>
+      <pre><code>@for (task of tasks) {
+  &lt;li&gt;{{ task.title }}&lt;/li&gt;
+}
+
+// Si on ajoute 1 tâche
+// → Angular retravaille toute la liste</code></pre>
+    </div>
+
+    <div class="comparison-after">
+      <h3>✅ Avec trackBy (rapide)</h3>
+      <p>Angular identifie chaque élément grâce à une clé stable</p>
+      <pre><code>@for (task of tasks; track task.id) {
+  &lt;li&gt;{{ task.title }}&lt;/li&gt;
+}
+
+// Si on ajoute 1 tâche
+// → Angular met à jour 1 seul élément</code></pre>
+    </div>
+  </div>
+
+  <div class="success-box">
+    <h3>📊 Impact sur une liste de 1000 tâches</h3>
+    <p>
+      <strong>trackBy est indispensable avec OnPush</strong> pour éviter
+      des recalculs inutiles.
+    </p>
+    <ul>
+      <li><strong>Sans trackBy :</strong> recalcul global de la liste</li>
+      <li><strong>Avec trackBy :</strong> mise à jour ciblée</li>
+      <li><strong>Gain :</strong> performances fortement améliorées 🚀</li>
+    </ul>
+  </div>
+</div>
+
+        <!-- Slide 11 -->
+        <div class="slide">
+            <h1>🔒 Sécurité côté front-end</h1>
+            
+            <div class="warning-box">
+                <h3>⚠️ Pourquoi le front est une surface d'attaque ?</h3>
+                <ul>
+                    <li><strong>Données utilisateur</strong> : Input, formulaires, URLs</li>
+                    <li><strong>APIs externes</strong> : Appels HTTP, webhooks</li>
+                    <li><strong>DOM manipulé dynamiquement</strong> : innerHTML, scripts</li>
+                    <li><strong>Code client visible</strong> : Tout peut être inspecté</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <h3>🛡️ Les 3 principales menaces front-end</h3>
+                <ol style="font-size: 1.3em; line-height: 2;">
+                    <li><strong>XSS</strong> (Cross-Site Scripting)</li>
+                    <li><strong>CSRF</strong> (Cross-Site Request Forgery)</li>
+                    <li><strong>Injection de code</strong></li>
+                </ol>
+            </div>
+
+            <div class="highlight">
+                <h3>💡 Règle fondamentale</h3>
+                <p style="font-size: 1.5em; text-align: center; font-weight: bold;">
+                    "Ne jamais faire confiance aux données utilisateur"
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 12 -->
+        <div class="slide">
+            <h1>⚠️ XSS (Cross-Site Scripting)</h1>
+            
+            <div class="warning-box">
+                <h3>🔴 Principe de l'attaque XSS</h3>
+                <p>Un attaquant injecte du code JavaScript malveillant dans votre application</p>
+                <pre><code>// Exemple d'input malveillant
+const maliciousInput = '&lt;script&gt;alert("Hacké!")&lt;/script&gt;';
+
+// Si affiché sans protection :
+&lt;div&gt;{{ maliciousInput }}&lt;/div&gt;
+// → Le script s'exécute !</code></pre>
+            </div>
+
+            <div class="highlight">
+                <h3>💡 Exemple concret dans TaskBoard</h3>
+                <pre><code>// Un utilisateur ajoute une "tâche" malveillante :
+addTask('&lt;img src=x onerror="alert(document.cookie)"&gt;');
+
+// Si affiché sans protection, le script vole les cookies !</code></pre>
+            </div>
+
+            <div class="info-box">
+                <h3>🎯 Types de XSS</h3>
+                <ul>
+                    <li><strong>Stored XSS</strong> : Le code est stocké dans la base de données</li>
+                    <li><strong>Reflected XSS</strong> : Le code est dans l'URL</li>
+                    <li><strong>DOM-based XSS</strong> : Le code manipule le DOM directement</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 13 -->
+        <div class="slide">
+            <h1>🛡️ Protection XSS dans Angular</h1>
+            
+            <div class="success-box">
+                <h3>✅ Angular protège automatiquement !</h3>
+                <p>Avec l'interpolation normale, Angular échappe le HTML</p>
+                <pre><code>// Code malveillant
+task.title = '&lt;script&gt;alert("Hacké")&lt;/script&gt;';
+
+// Dans le template Angular
+&lt;div&gt;{{ task.title }}&lt;/div&gt;
+
+// Résultat affiché (texte brut, pas exécuté) :
+// &lt;script&gt;alert("Hacké")&lt;/script&gt;</code></pre>
+                <p>✅ Le script n'est PAS exécuté, il est affiché comme du texte !</p>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ Danger avec innerHTML</h3>
+                <pre><code>// ❌ DANGEREUX : innerHTML exécute le code !
+&lt;div [innerHTML]="task.description"&gt;&lt;/div&gt;
+
+// Si task.description contient un script, il s'exécute !</code></pre>
+            </div>
+
+            <div class="info-box">
+                <h3>🔧 Solution : DomSanitizer</h3>
+                <pre><code>import { DomSanitizer } from '@angular/platform-browser';
+
+export class TaskComponent {
+  private sanitizer = inject(DomSanitizer);
+
+  getSafeHtml(html: string) {
+    return this.sanitizer.sanitize(SecurityContext.HTML, html);
+  }
+}
+
+// Dans le template
+&lt;div [innerHTML]="getSafeHtml(task.description)"&gt;&lt;/div&gt;</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 14 -->
+        <div class="slide">
+            <h1>✅ Bonnes pratiques XSS</h1>
+            
+            <div class="success-box">
+                <h3>🎯 Ce qu'il faut TOUJOURS faire</h3>
+                <ol style="font-size: 1.2em; line-height: 2;">
+                    <li><strong>Utiliser l'interpolation normale</strong>
+                        <pre><code>✅ {{ task.title }}  &lt;!-- Sécurisé par défaut --&gt;</code></pre>
+                    </li>
+                    <li><strong>Éviter innerHTML autant que possible</strong>
+                        <pre><code>❌ [innerHTML]="..."  &lt;!-- Dangereux --&gt;
+✅ {{ ... }}           &lt;!-- Préférable --&gt;</code></pre>
+                    </li>
+                    <li><strong>Valider côté serveur AUSSI</strong>
+                        <pre><code>// Le front n'est PAS suffisant !
+// Le back doit AUSSI valider les données</code></pre>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="warning-box">
+                <h3>🔴 Ce qu'il ne faut JAMAIS faire</h3>
+                <ul style="font-size: 1.2em;">
+                    <li>❌ Utiliser <code>bypassSecurityTrustHtml()</code> sans raison valide</li>
+                    <li>❌ Désactiver la protection Angular</li>
+                    <li>❌ Faire confiance aux données utilisateur</li>
+                    <li>❌ Penser que le front suffit pour la sécurité</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 15 -->
+        <div class="slide">
+            <h1>🔒 CSRF (Cross-Site Request Forgery)</h1>
+            
+            <div class="warning-box">
+                <h3>🔴 Principe de l'attaque CSRF</h3>
+                <p>Un site malveillant force l'utilisateur à faire une action non désirée sur VOTRE site</p>
+                <pre><code>1. Utilisateur connecté sur taskboard.com (session active)
+2. Visite site-malveillant.com
+3. site-malveillant.com contient :
+   &lt;img src="https://taskboard.com/api/tasks/delete/123"&gt;
+4. Le navigateur envoie la requête AVEC les cookies
+5. La tâche est supprimée sans que l'utilisateur le veuille !</code></pre>
+            </div>
+
+            <div class="info-box">
+                <h3>🛡️ Protection CSRF</h3>
+                <p><strong>Solution :</strong> Utiliser des tokens CSRF</p>
+                <ol>
+                    <li>Le serveur génère un token unique par session</li>
+                    <li>Le token est envoyé dans chaque requête</li>
+                    <li>Le serveur vérifie que le token est valide</li>
+                    <li>Les requêtes externes n'ont pas le token → rejetées</li>
+                </ol>
+            </div>
+
+            <div class="success-box">
+                <h3>✅ Angular HttpClient protège automatiquement</h3>
+                <pre><code>// Angular ajoute automatiquement le header X-XSRF-TOKEN
+this.http.post('/api/tasks', task).subscribe(...)
+
+// Le serveur vérifie le token côté back</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 16 -->
+        <div class="slide">
+            <h1>🔒 Content Security Policy (CSP)</h1>
+            
+            <div class="info-box">
+                <h3>🎯 Qu'est-ce qu'une CSP ?</h3>
+                <p>Une <strong>Content Security Policy</strong> est un mécanisme de sécurité qui limite les sources de contenu autorisées</p>
+                <p>Elle se configure via un header HTTP :</p>
+                <pre><code>Content-Security-Policy: 
+  default-src 'self'; 
+  script-src 'self' https://cdn.example.com; 
+  style-src 'self' 'unsafe-inline';</code></pre>
+            </div>
+
+            <div class="success-box">
+                <h3>🛡️ Ce que bloque une CSP</h3>
+                <ul>
+                    <li>✅ Scripts inline malveillants</li>
+                    <li>✅ Scripts externes non autorisés</li>
+                    <li>✅ Styles inline dangereux</li>
+                    <li>✅ Ressources de domaines non autorisés</li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <h3>💡 Exemple concret</h3>
+                <pre><code>// Avec CSP : script-src 'self'
+
+// ✅ Autorisé (même domaine)
+&lt;script src="/assets/app.js"&gt;&lt;/script&gt;
+
+// ❌ Bloqué (domaine externe)
+&lt;script src="https://malicious.com/evil.js"&gt;&lt;/script&gt;
+
+// ❌ Bloqué (script inline)
+&lt;script&gt;alert("Hacké")&lt;/script&gt;</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 17 -->
+        <div class="slide">
+            <h1>🔧 CSP avec Angular</h1>
+            
+            <div class="success-box">
+                <h3>✅ Configuration CSP compatible Angular</h3>
+                <pre><code>Content-Security-Policy:
+  default-src 'self';
+  script-src 'self';
+  style-src 'self' 'unsafe-inline';  &lt;!-- Angular a besoin de styles inline --&gt;
+  img-src 'self' data: https:;
+  font-src 'self' data:;</code></pre>
+            </div>
+
+            <div class="info-box">
+                <h3>🔧 Configuration côté serveur (exemple Node.js)</h3>
+                <pre><code>// express.js
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
+  );
+  next();
+});</code></pre>
+            </div>
+
+            <div class="highlight">
+                <h3>💡 Tester votre CSP</h3>
+                <ol>
+                    <li>Ouvrir DevTools → Console</li>
+                    <li>Les violations CSP apparaissent en rouge</li>
+                    <li>Ajuster la politique selon les besoins</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Slide 18 -->
+        <div class="slide">
+            <h1>📋 Récapitulatif Sécurité</h1>
+            
+            <div class="success-box">
+                <h3>✅ Ce qu'Angular fait pour vous</h3>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td style="width: 25%; font-weight: bold;">XSS</td>
+                            <td>Protection automatique avec {{ }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;">CSRF</td>
+                            <td>Tokens automatiques avec HttpClient</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold;">Sanitization</td>
+                            <td>DomSanitizer pour nettoyer le HTML</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ Ce que VOUS devez faire</h3>
+                <ul>
+                    <li>✅ Ne jamais utiliser innerHTML sans raison valide</li>
+                    <li>✅ Valider les données côté serveur AUSSI</li>
+                    <li>✅ Configurer une CSP stricte</li>
+                    <li>✅ Ne jamais faire confiance aux données utilisateur</li>
+                    <li>✅ Tester régulièrement la sécurité</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <h3>💡 Règles d'or</h3>
+                <ol style="font-size: 1.2em; line-height: 2;">
+                    <li><strong>Le front n'est jamais sûr à 100%</strong> → Sécuriser le back</li>
+                    <li><strong>Angular aide, mais ne fait pas tout</strong> → Restez vigilant</li>
+                    <li><strong>La sécurité est une mentalité</strong> → Penser sécurité dès la conception</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Slide 19 -->
+        <div class="slide">
+            <h1>🛠️ Atelier pratique guidé</h1>
+            
+            <div class="info-box">
+                <h3>📋 Partie 1 : Audit de performance (30 min)</h3>
+                <ol>
+                    <li><strong>Installer Angular DevTools</strong>
+                        <ul><li>Chrome Web Store → "Angular DevTools"</li></ul>
+                    </li>
+                    <li><strong>Lancer un profiling</strong>
+                        <ul>
+                            <li>DevTools → Angular → Profiler</li>
+                            <li>Enregistrer une action (ajouter une tâche)</li>
+                            <li>Identifier combien de composants se rafraîchissent</li>
+                        </ul>
+                    </li>
+                    <li><strong>Audit Lighthouse</strong>
+                        <ul>
+                            <li>DevTools → Lighthouse → Performance</li>
+                            <li>Noter le score actuel</li>
+                            <li>Identifier les problèmes principaux</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="success-box">
+                <h3>🔧 Partie 2 : Optimisations (30 min)</h3>
+                <ol>
+                    <li>Ajouter OnPush sur TasksPageComponent</li>
+                    <li>Vérifier trackBy dans toutes les boucles @for</li>
+                    <li>Relancer Lighthouse et comparer les scores</li>
+                </ol>
+            </div>
+
+            <div class="warning-box">
+                <h3>🔒 Partie 3 : Audit de sécurité (20 min)</h3>
+                <ol>
+                    <li>Chercher les innerHTML dans le code</li>
+                    <li>Vérifier qu'aucun script inline n'est utilisé</li>
+                    <li>Tester l'ajout d'une tâche avec du HTML malveillant</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Slide 20 -->
+        <div class="slide">
+            <h1>📚 Synthèse de la séquence</h1>
+            
+            <div class="success-box">
+                <h3>⚡ Performance : Les 5 règles d'or</h3>
+                <ol style="font-size: 1.2em; line-height: 2;">
+                    <li><strong>Mesurer avant d'optimiser</strong> (DevTools + Lighthouse)</li>
+                    <li><strong>OnPush sur les composants</strong> (réduit les vérifications)</li>
+                    <li><strong>trackBy dans les listes</strong> (optimise le DOM)</li>
+                    <li><strong>Lazy Loading</strong> (réduit le bundle initial)</li>
+                    <li><strong>Découper en composants</strong> (facilite l'optimisation)</li>
+                </ol>
+            </div>
+
+            <div class="info-box">
+                <h3>🔒 Sécurité : Les 5 commandements</h3>
+                <ol style="font-size: 1.2em; line-height: 2;">
+                    <li><strong>Ne jamais faire confiance aux données utilisateur</strong></li>
+                    <li><strong>Utiliser {{ }} au lieu de innerHTML</strong></li>
+                    <li><strong>Valider côté serveur AUSSI</strong></li>
+                    <li><strong>Configurer une CSP stricte</strong></li>
+                    <li><strong>Tester régulièrement</strong></li>
+                </ol>
+            </div>
+
+            <div class="highlight" style="text-align: center; padding: 40px;">
+                <h2 style="font-size: 2em; color: #667eea;">
+                    "Performance = Conception + Mesure"<br>
+                    "Sécurité = Bonnes pratiques + Vigilance"<br>
+                    "Angular aide, mais ne fait pas tout seul"
+                </h2>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="prev-btn">← Précédent</button>
+            <button id="next-btn">Suivant →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const currentSlideSpan = document.getElementById('current-slide');
+        const totalSlidesSpan = document.getElementById('total-slides');
+
+        totalSlidesSpan.textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[n].classList.add('active');
+            currentSlideSpan.textContent = n + 1;
+            
+            prevBtn.disabled = n === 0;
+            nextBtn.disabled = n === totalSlides - 1;
+            
+            slides[n].scrollTop = 0;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
