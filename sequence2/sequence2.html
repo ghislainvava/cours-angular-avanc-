@@ -728,44 +728,67 @@ ngOnDestroy() {
             </div>
         </div>
 
-        <!-- Slide 14 -->
+   <!-- Slide 14 -->
         <div class="slide">
             <h1>💎 Exemple avec BehaviorSubject</h1>
             
+            <div class="info-box">
+                <h3>📝 D'abord, définir l'interface TaskItem</h3>
+                <p>Pour typer correctement nos tâches, on crée une interface TypeScript :</p>
+                <pre><code>// task.service.ts
+export interface TaskItem {
+  id: number;
+  title: string;
+  completed: boolean;
+}</code></pre>
+                <p><strong>💡 Pourquoi une interface ?</strong></p>
+                <ul>
+                    <li>✅ TypeScript vérifie que nos tâches ont bien ces propriétés</li>
+                    <li>✅ Autocomplétion dans VS Code</li>
+                    <li>✅ Erreurs détectées AVANT l'exécution</li>
+                </ul>
+            </div>
+
             <div class="success-box">
-                <h3>📝 Code du service mis à jour</h3>
+                <h3>📝 Code du service mis à jour avec typage</h3>
                 <pre><code>import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+
+// 1️⃣ Définir l'interface
+export interface TaskItem {
+  id: number;
+  title: string;
+  completed: boolean;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  private tasks = [
-    { id: 1, title: 'Apprendre Angular' },
-    { id: 2, title: 'Créer TaskBoard Pro' }
+  // 2️⃣ Typer les tâches initiales
+  private tasks: TaskItem[] = [
+    { id: 1, title: 'Apprendre Angular', completed: false },
+    { id: 2, title: 'Créer TaskBoard Pro', completed: false }
   ];
 
-  private tasksSubject = new BehaviorSubject(this.tasks);
+  // 3️⃣ Typer le BehaviorSubject
+  private tasksSubject = new BehaviorSubject&lt;TaskItem[]&gt;(this.tasks);
   tasks$ = this.tasksSubject.asObservable();
 
-  addTask(title: string) {
-    const newTask = { id: Date.now(), title };
+  // 4️⃣ Typer les paramètres et retours
+  addTask(title: string): void {
+    const newTask: TaskItem = { 
+      id: Date.now(), 
+      title,
+      completed: false 
+    };
     this.tasks.push(newTask);
-    this.tasksSubject.next(this.tasks);  // 🔥 Émet la nouvelle liste
+    this.tasksSubject.next(this.tasks);
   }
 }</code></pre>
             </div>
 
-            <div class="info-box">
-                <h3>🔑 Explications</h3>
-                <ul>
-                    <li><strong>BehaviorSubject</strong> garde en mémoire la dernière version de la liste</li>
-                    <li>Les composants écoutent le flux via <code>tasks$</code></li>
-                    <li>Chaque fois qu'on ajoute une tâche avec <code>addTask()</code>, on appelle <code>next()</code></li>
-                    <li>La vue se met à jour <strong>automatiquement</strong></li>
-                </ul>
-            </div>
+          
         </div>
 
         <!-- Slide 15 -->
@@ -791,7 +814,8 @@ export class TaskService {
   &lt;/ul&gt;
 } @else {
   &lt;p&gt;Chargement...&lt;/p&gt;
-}</code></pre>
+}
+</code></pre>
             </div>
 
             <div class="highlight">

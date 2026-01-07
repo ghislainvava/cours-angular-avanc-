@@ -50,7 +50,15 @@ function updateIndicators() {
 }
 
 function goHome() {
-    window.location.href = 'index.html';
+    // Chercher la racine du site (où se trouve le vrai index.html)
+    const currentPath = window.location.pathname;
+    
+    // Si on est dans un sous-dossier (sequence4/), on remonte
+    if (currentPath.includes('/sequence4/')) {
+        window.location.href = '../../index.html';  // Remonter de 2 niveaux
+    } else {
+        window.location.href = '../index.html';     // Remonter de 1 niveau
+    }
 }
 
 // Navigation clavier
