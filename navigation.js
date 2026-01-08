@@ -61,6 +61,11 @@ function goHome() {
     }
 }
 
+function goToMenu() {
+    // Retour au menu de la séquence 4
+    window.location.href = 'sequence4.html';
+}
+
 // Navigation clavier
 document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft') changeSlide(-1);
